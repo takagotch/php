@@ -1,0 +1,4390 @@
+------------------------------------------------------------
+Learning PHP & MySQL　サンプルコード
+------------------------------------------------------------
+
+
+******
+1章
+******
+
+------------------------------
+○例 1-1 commentsテーブルにコメントを追加するPHPのユーザ定義関数
+<?php
+
+//$commentに指定された値を
+//commentsテーブルに追加する
+//データベース名もパラメータから取得する
+
+function add_comment($comment,$database){
+    // コメントを追加する
+    // （セキュリティを考慮して、$commentをエスケープする）
+    $comment=mysql_real_escape_string($comment);
+
+    // SQL文を組み立てる
+    $sql_insert = "INSERT INTO `comments` (body) VALUES ('$comment')";
+
+    // データベースを選択する
+    mysql_select_db($database);
+
+    $success = mysql_query($sql_insert) or die(mysql_error(  ));
+
+    // ページのヘッダを出力する
+    print('
+        <html>
+            <head>
+                <title>Remove User</title>
+                <link rel="stylesheet" type="text/css" href="example.css" />
+            </head>
+            <body>
+                <div class="comments">');
+
+    // うまく追加できたか確認する
+    if ($success){
+        // うまく追加できた場合のメッセージ
+        print("The comment $comment was inserted successfully.");
+    }
+    else {
+        // 追加処理が失敗した場合のメッセージ
+        print("The comment $comment could not be inserted. Please try again later.");
+    }
+
+    // ページのフッタを出力する
+    print('</div></body></html>');
+}
+
+?>
+
+
+------------------------------
+○例 1-2 PHPで使用するSmartyテンプレート
+<html>
+    <head>
+        <title>My Books</title>
+    </head>
+    <body>
+        <p>Favorite Books:</p>
+        <p>
+            Title: {$title}<br />
+            Author: {$author}
+        </p>
+    </body>
+</html>
+
+
+------------------------------
+○例 1-3 テンプレートによる置換処理後のHTML
+<html>
+    <head>
+        <title>My Books</title>
+    </head>
+    <body>
+        <p>Favorite Books:</p>
+        <p>
+            Title: Java in a Nutshell<br />
+            Author: Flanagan
+        </p>
+    </body>
+</html>
+
+
+
+******
+3章
+******
+
+------------------------------
+○例 3-1 簡単なHTMLドキュメントを作成
+<html>
+    <head>
+        <title>Hello World</title>
+    </head>
+    <body>
+        <p>I sure wish I had something to say.</p>
+    </body>
+</html>
+
+
+------------------------------
+○例 3-2 PHPコードの記述方法が間違っている例
+<html>
+    <head>
+        <title>Hello World</title>
+    </head>
+    <body>
+        echo "<p>Now I have something to say.</p>";
+    </body>
+</html>
+
+
+------------------------------
+○例 3-3 print文の正しい実行方法（hello.php）
+<html>
+    <head>
+        <title>Hello World</title>
+    </head>
+    <body>
+        <?php
+
+        print "Hello world!<br />";
+        print "Goodbye.<br />";
+        print "Over and out.";
+
+        ?>
+    </body>
+</html>
+
+
+------------------------------
+○例 3-4 例 3-3から出力されたHTMLタグ
+<html>
+<head>
+        <title>Hello World</title>
+    </head>
+    <body>
+        Hello world!<br />Goodbye.<br />Over and out.
+    </body>
+</html>
+
+
+------------------------------
+○例 3-5 コメントを記述してコードを読みやすくする
+<html>
+    <head>
+        <title>Hello World</title>
+    </head>
+    <body>
+        <?php
+
+        // 1行コメントで、「hello world」を
+        // 出力するということを説明する
+
+        /* 複数行コメントはこのように使い、
+           コードブロックを説明するときに
+           使うことができる */
+
+        echo "Hello world!<br />";
+        echo "Goodbye.<br />";
+
+        ?>
+    </body>
+</html>
+
+
+------------------------------
+○例 3-6 変数に新たな値を格納する
+<?php
+$age = 30;
+$age = 31;
+echo $age;
+?>
+
+
+------------------------------
+○例 3-7 変数のスコープの仕組み
+<?php
+
+// 関数を定義する
+function birthday(  ){
+    // $ageを1に設定する
+    $age = 1;
+}
+
+// $ageを30に設定する
+$age = 30;
+
+// 関数を実行する
+birthday(  );
+
+// $ageを表示する
+echo $age;
+
+?>
+
+
+------------------------------
+○例 3-8 グローバル変数を使用して値を変更する
+<?php
+
+// 関数を定義する
+function birthday(  ){
+    // $ageをグローバル変数として定義する
+    global $age;
+
+    // $ageに1を加算する
+    $age = $age + 1;
+}
+
+// $ageを30に設定する
+$age = 30;
+
+// 関数を実行する
+birthday(  );
+
+// $ageを表示する
+echo $age;
+
+?>
+
+
+------------------------------
+○例 3-9 静的変数は最後の値を記憶している
+<?php
+
+// 関数を定義する
+
+function birthday(  ){
+    // $ageを静的変数として定義する
+    static $age = 0;
+
+    // $ageに1を加算する
+    $age = $age + 1;
+
+    // 静的変数$ageを表示する
+    echo "Birthday number $age<br />";
+}
+
+// $ageを30に設定する
+$age = 30;
+
+// 関数を2回実行する
+birthday(  );
+birthday(  );
+
+// $ageを表示する
+echo "Age: $age<br />";
+
+?>
+
+
+------------------------------
+○例 3-10 test.phpでPHP_SELFを使用する例
+<?php
+echo htmlentities($_SERVER["PHP_SELF"]);
+?>
+
+
+------------------------------
+○例 3-11 文字列との連携
+<?php
+$my_string = "Margaritaville - Suntan Oil Application!";
+echo "Margaritaville - Suntan Oil Application!";
+?>
+
+
+------------------------------
+○例 3-12 文字列の中に変数を配置する
+<?php
+$my_string = "Margaritaville - Suntan Oil Application!";
+echo "Time for $my_string";
+?>
+
+
+------------------------------
+○例 3-13 文字列の格納時にシングルクォーテーションを使用する
+<?php
+$my_string = 'Margaritaville - Suntan Oil Application!';
+echo $my_string;
+?>
+
+
+------------------------------
+○例 3-14 さまざまな特殊文字を格納する例
+<?php
+$newline = "A newline is \n";
+$return = "A carriage return is \r";
+$tab = "A tab is \t";
+$dollar = "A dollar sign is \$";
+$doublequote = "A double-quote is \"";
+?>
+
+
+------------------------------
+○例 3-15 echoが特殊文字で中断される
+<?php
+// 「specialH2」がダブルクォーテーションで囲まれているので、動作しない
+echo "<h2 class="specialH2">Margaritaville!</h2>";
+?>
+
+
+------------------------------
+○例 3-16 特殊文字を正しくエスケープ
+<?php
+// シングルクォーテーションを使えば問題ない
+echo "<h2 class=\"specialH2\">Margaritaville!</h2>";
+echo '<h2 class="specialH2">Margaritaville!</h2>';
+?>
+
+
+------------------------------
+○例 3-17 strcasecmpを使用して2つの文字列を比較する
+<?php
+
+$name1 = "Bill";
+$name2 = "BILL";
+
+$result = strcasecmp($name1, $name2);
+
+if (!$result){
+    echo "They match.";
+}
+
+?>
+
+
+------------------------------
+○例 3-18 文字列の連結
+<?php
+$my_string = "Hello Max. My name is: ";
+$newline = "<br />";
+echo $my_string . "Paula" . $newline;
+echo "Hi, I'm Max. Who are you? " . $my_string . $newline;
+echo "Hi, I'm Max. Who are you? " . $my_string . "Paula";
+//最後の行は、「echo "Hi, I'm Max. Who are you? $my_string Paula";」と同じ
+?>
+
+
+------------------------------
+○例 3-19 文字列と数値の結合
+<?php
+$str = "This is an example of ". 3 ." in the middle of a string.";
+echo $str;
+?>
+
+
+------------------------------
+○例 3-20 プログラム内での定数の使用
+<?php
+define("HELLO", "Hello world! ");
+echo HELLO; // 「Hello world!」を出力する
+$constant_name = "HELLO";
+echo constant($constant_name);
+?>
+
+
+------------------------------
+○例 3-21 定義済みの定数を使用して行番号とファイル名を出力（predefined_constants.php）
+<?php
+echo "Executing line " . __LINE__ . " of PHP script " . __FILE__ . ".";
+?>
+
+
+------------------------------
+○例 3-22 PHPによる数学演算
+<?php>
+$sunny_days=300;
+$Margaritaville_sunny_days_ratio=$sunny_days/365;
+echo $Margaritaville_sunny_days_ratio;
+?>
+
+
+------------------------------
+○例 3-23 加算子で変数を加算する
+<?php
+$counter=1;
+$counter++;
+echo $counter;
+?>
+
+
+------------------------------
+○例 3-24 演算子の使用
+<?php
+$counter=1;
+$counter--;
+echo $counter;
+?>
+
+
+------------------------------
+○例 3-25 前置演算子と後置演算子の使用
+<?php
+$test=1;
+echo "Preincrement: ".(++$test);
+echo "<BR>";
+echo "Value afterwords: ".$test;
+echo "<BR>";
+$test=1;
+echo "Postincrement: ".($test++);
+echo "<BR>";
+echo "Value afterwords: ".$test;
+?>
+
+
+******
+4章
+******
+
+------------------------------
+○例 4-1 値の合計
+<?php
+$Margaritaville = 3; // 3を格納
+$Sun_Tan_Application = 2; // 2を格納
+$Fun_in_the_Sun = $Margaritaville + $Sun_Tan_Application;
+echo $Fun_in_the_Sun;
+?>
+
+
+------------------------------
+○例 4-2 変数のキャスト
+$test=1234;
+$test_string = (string)$test;
+
+
+------------------------------
+○例 4-3 左側の式
+3 = $locations; //悪い例：3というリテラルには、値を格納できない
+$a + $b = $c; //悪い例：左側の式は変数ではない
+$c = $a + $b; //問題はない
+$stores = "Becker"." "."Furniture"; //問題はない
+
+
+------------------------------
+○例 4-4 優先順位
+2 + 4 - 5 == 1;
+4 - 5 + 2 == 1;
+
+4 * 5 / 2 == 10;
+5 / 2 * 4 == 10;
+
+2 + 4 - 5 == 1;
+4 - 5 + 2 == 1;
+
+
+------------------------------
+○例 4-5 括弧を使用して既定の優先順位を変更
+echo 2 * 3 + 4 + 1;
+echo 2 * (3 + 4 + 1);
+
+
+
+------------------------------
+○例 4-6 else文とif文
+if ($username == "Admin"){
+    echo ('Welcome to the admin page.');
+}
+else {
+    echo ('Welcome to the user page.');
+}
+
+
+------------------------------
+○例 4-7 複数条件のチェック
+if ($username == "Admin"){
+    echo ('Welcome to the admin page.');
+}
+elseif ($username == "Guest"){
+    echo ('Please take a look around.');
+}
+else {
+    echo ("Welcome back, $username.");
+}
+
+
+------------------------------
+○例 4-8 ?演算子を使用してメッセージを出力する
+<?php
+$logged_in = TRUE;
+$user = "Admin";
+$banner = ($logged_in==TRUE) ? "Welcome back, $user!" : "Please login.";
+echo "$banner";
+?>
+
+
+------------------------------
+○例 4-9 if文で複数の値をチェックする
+if ($action == "ADD") {
+    echo "Perform actions for adding.";
+    echo "As many statements as you like can be in each block.";
+}
+elseif ($action == "MODIFY") {
+    echo "Perform actions for modifying.";
+}
+elseif ($action == "DELETE") {
+    echo "Perform actions for deleting.";
+}
+
+
+------------------------------
+○例 4-10 switch文で複数の値をチェックする
+switch ($action) {
+    case "ADD":
+        echo "Perform actions for adding.";
+        echo "As many statements as you like can be in each block.";
+        break;
+    case "MODIFY":
+        echo "Perform actions for modifying.";
+        break;
+    case "DELETE":
+        echo "Perform actions for deleting.";
+        break;
+}
+
+
+------------------------------
+○例 4-11 breakを使用しない場合
+$action = "ASSEMBLE ORDER";
+switch ($action) {
+    case "ASSEMBLE ORDER":
+        echo "Perform actions for order assembly.<br />";
+    case "PACKAGE":
+        echo "Perform actions for packing.<br />";
+    case "SHIP":
+        echo "Perform actions for shipping.<br />";
+}
+
+
+------------------------------
+○例 4-12 「default:」を使用してエラーを出力する
+switch ($action) {
+    case "ADD":
+        echo "Perform actions for adding.";
+        break;
+    case "MODIFY":
+        echo "Perform actions for modifying.";
+        break;
+    case "DELETE":
+        echo "Perform actions for deleting.";
+        break;
+    default:
+        echo "Error: Action must be either ADD, MODIFY, or DELETE.";
+}
+
+
+------------------------------
+○例 4-13 endswitchを使用してswitchを終了する
+switch ($action):
+    case "ADD":
+       echo "Perform actions for adding.";
+       break;
+    case "MODIFY":
+       echo "Perform actions for modifying.";
+       break;
+    case "DELETE":
+       echo "Perform actions for deleting.";
+       break;
+    default:
+       echo "Error: Action must be either ADD, MODIFY, or DELETE.";
+endswitch;
+
+
+------------------------------
+○例 4-14 whileループで10まで数える例
+<?php
+$num = 1;
+
+while ($num <= 10){
+    print "Number is $num<br />";
+    $num++;
+}
+
+print 'Done.';
+?>
+
+
+------------------------------
+○例 4-15 do～whileで10まで数える例
+<?php
+
+$num = 1;
+
+do {
+    echo "Number  is ".$num."<br />";
+    $num++;
+} while ($num <= 10);
+
+echo "Done.";
+
+?>
+
+
+------------------------------
+○例 4-16 breakを使用して「ゼロ割り」を避ける
+<?php
+
+$counter = -3;
+
+for (; $counter < 10; $counter++){
+    // 「ゼロ割り」でないかチェックする
+    if ($counter == 0){
+        echo "Stopping to avoid division by zero.";
+        break;
+    }
+
+    echo "100/$counter<br />";
+}
+
+
+------------------------------
+○例 4-17 breakの代わりにcontinueを使用する
+<?php
+
+$counter=-3;
+
+for (;$counter<10;$counter++){
+    //「ゼロ割り」でないかチェックする
+    if ($counter==0){
+        echo "Skipping to avoid division by zero.<br>";
+        continue;
+    }
+
+    echo "100/$counter ",100/$counter,"<br />";
+}
+
+?>
+
+
+******
+5章
+******
+
+------------------------------
+○例 5-1 よくあるHello world
+<?php
+echo ("Hello world!");
+?>
+
+
+------------------------------
+○例 5-2 PHPの実行環境の情報を表示
+<?php
+phpinfo( );
+?>
+
+
+------------------------------
+○例 5-3 md5ハッシュの作成
+<?php
+    $mystring = "mystring";
+    $signature = md5($mystring);
+    echo $signature;
+?>
+
+
+------------------------------
+○例 5-4 パラメータを取る関数を定義して、文字列を大文字にする関数を使用する
+<?php
+// 文字列を大文字化する
+function capitalize( $str )
+{
+  // まず、すべての文字を小文字にする
+  $str = strtolower($str);
+  // 次に、先頭の文字を大文字にする
+  $str{0} = strtoupper($str{0});  //$str{0]は、文字列の先頭の文字を参照する
+  echo $str;
+}
+capitalize("hEllo WoRld!" );
+
+?>
+
+
+------------------------------
+○例 5-5 $eachパラメータに既定値が設定されたcapitalize関数を作成する
+<?php
+// 文字列全体、または各単語の先頭の文字列のみを大文字にする
+function capitalize( $str, $each=TRUE ) {
+
+  // 先頭の文字以外に大文字が残ってしまう可能性があるので、先にすべての文字を小文字にする
+  $str = strtolower($str);
+  if ($each === TRUE) {
+     $str = ucwords ($str);
+  } else {
+     $str = strtoupper($str);
+  }
+  echo ("$str <br />");
+}
+capitalize("hEllo WoRld!");
+echo ("Now do the same with the echo parameter set to FALSE.<br>");
+capitalize("hEllo WoRld!",FALSE);
+?>
+
+
+------------------------------
+○例 5-6 参照パラメータを取るようにcapitalize( )を変更する
+<?php
+function capitalize( &$str, $each=TRUE ){
+   // まず、文字をすべて小文字に変換する
+   $str = strtolower($str);
+   if ($each === true) {
+      $str = ucwords($str);
+   } else {
+      $str{0} = strtoupper($str{0});
+   }
+}
+$str = "hEllo WoRld!";
+capitalize( $str );
+echo $str;
+?>
+
+
+------------------------------
+○例 5-7 インクルードされるファイル（add.php）
+<?php
+function add( $x, $y ){
+
+  return $x + $y;
+}
+?>
+
+
+------------------------------
+○例 5-8 include文の使用
+<?php
+include('add.php');
+echo add(2, 2);
+?>
+
+
+------------------------------
+○例 5-9 include_onceを使用してファイルをインクルードする
+<?php
+include_once('add.php');
+include_once('add.php');
+echo add(2, 2);
+?>
+
+
+------------------------------
+○例 5-10 Catクラスからオブジェクトを作成する
+<?php
+class Cat {
+}
+$fluffy = new Cat( );
+echo "Fluffy is a new ".gettype($fluffy)."!";
+?>
+
+
+------------------------------
+○例 5-11 Catクラスのコンストラクタを作成
+<?php
+class Cat {
+  // コンストラクタ
+  function Cat(  ) {
+  }
+}
+?>
+
+
+------------------------------
+○例 5-12 PHP 5スタイルのコンストラクタの使用
+<?php
+class Cat {
+  // コンストラクタ
+  Function __constructor(  ){
+  }
+}
+?>
+
+
+------------------------------
+○例 5-13 Catの3つのメンバ関数の定義
+<?php
+Class Cat {
+  // コンストラクタ
+  function __constructor(  ) {
+  }
+
+  // ネコが鳴く
+  function meow(  ) {
+    echo "Meow...";
+  }
+
+  // ネコがエサを食べる
+  function eat(  ) {
+    echo "*eats*";
+  }
+
+  // ネコがのどを鳴らす
+  function purr(  ) {
+    echo "*Purr...*";
+  }
+}
+?>
+
+
+------------------------------
+○例 5-14 オブジェクトを新規作成して変数に格納する
+<?php
+Class Cat {
+  // コンストラクタ
+  function __constructor(  ) {
+  }
+
+  // ネコが鳴く
+  function meow(  ) {
+    echo "Meow...";
+  }
+
+  // ネコがエサを食べる
+  function eat(  ) {
+    echo "*eats*";
+  }
+
+  // ネコがのどを鳴らす
+  function purr(  ) {
+    echo "*Purr...*";
+  }
+}
+
+//新規作成したCatオブジェクトを$myCatに格納する
+$myCat=new Cat;
+?>
+
+
+------------------------------
+○例 5-15 Catに変数$ageを追加する
+<?php
+class Cat {
+  // ネコの年を設定
+  var $age;
+  //PHP 5では次のように記述する
+  //public $age;
+}
+?>
+
+
+------------------------------
+○例 5-16 「this->」を使用して、変数$ageにアクセスする
+<?php
+class Cat {
+    // ネコの年を設定
+    var $age;
+
+    // コンストラクタ
+    function Cat($new_age){
+
+        // ネコの年齢に新たな値を格納する
+        $this->age = $new_age;
+    }
+    //ageフィールドを加算するbirthdayメソッド
+    function Birthday(  ){
+
+        $this->age++;
+    }
+}
+// クラスのインスタンスを新たに作成する（年齢は1歳）
+$fluffy = new Cat(1);
+echo "Age is $fluffy->age <br />";
+echo "Birthday<br/>";
+// fluffyの年齢を1つ増やす
+$fluffy->Birthday(  );
+echo "Age is $fluffy->age <br />";
+?>
+
+
+------------------------------
+○例 5-17 extendsを使用してサブクラスを定義する
+<?php
+class Cat {
+    // ネコの年を設定
+    var $age;
+
+    function Cat($new_age){
+
+        // ネコの年齢に新たな値を格納する
+        $this->age = $new_age;
+    }
+    function Birthday(  ){
+
+        $this->age++;
+    }
+}
+class Domestic_Cat extends Cat {
+    // コンストラクタ
+    function Domestic_Cat(  ) {
+    }
+
+    // 人になれたネコのように眠る
+    function sleep(  ) {
+        echo("Zzzzzz.<br />");
+    }
+}
+$fluffy=new Domestic_Cat(  );
+$fluffy->Birthday(  );
+$fluffy->sleep(  );
+echo "Age is $fluffy->age <br />";
+?>
+
+
+------------------------------
+○例 5-18 parent構文の使用
+<?php
+class Cat {
+    // ネコの年を設定
+    var $age;
+
+    function Cat($new_age){
+
+        // ネコの年齢に新たな値を格納する
+        $this->age = $new_age;
+    }
+    function Birthday(  ){
+
+        $this->age++;
+    }
+    function Eat(  ){
+
+        echo "Chomp chomp.";
+    }
+    function Meow(  ){
+
+        echo "Meow.";
+    }
+}
+
+class Domestic_Cat extends Cat {
+    // コンストラクタ
+    function Domestic_Cat(  ) {
+    }
+
+    // Domestic_Catクラスでもエサを食べる
+    function eat(  ) {
+        parent::eat(  );
+        // 食べ終わったら鳴かせてみよう
+        $this->meow(  );
+    }
+}
+?>
+
+
+------------------------------
+○例 5-19 親クラスのコンストラクタを実行する
+<?php
+    class Cat {
+    // ネコの年を設定
+    var $age;
+
+    function Cat($new_age){
+
+        // ネコの年齢に新たな値を格納する
+        $this->age = $new_age;
+    }
+    function Birthday(  ){
+
+        $this->age++;
+    }
+    function Eat(  ){
+
+        echo "Chomp chomp.";
+    }
+    function Meow(  ){
+
+        echo "Meow.";
+    }
+}
+class Domestic_Cat extends Cat {
+    // コンストラクタ
+    function Domestic_Cat($new_age) {
+        // 親クラス（スーパークラス）の
+        // コンストラクタを呼び出す
+        parent::Cat($new_age);
+    }
+}
+?>
+
+
+------------------------------
+○例 5-20 「->」と::演算子によるhypnotizeメソッドの実行
+<?php
+    class Cat {
+    }
+
+class Hypnotic_Cat extends Cat {
+    // コンストラクタ
+    function Hypnotic_Cat(  ) {
+    }
+
+    // この関数は静的に実行できる
+    public static function hypnotize(  ) {
+
+        echo ("The cat was hypnotized.");
+        return;
+    }
+}
+
+// 静的に実行する
+Hypnotic_Cat::hypnotize(  );
+
+// オブジェクトを作成して実行する
+$hypnotic_cat = new Hypnotic_Cat(  );
+$hypnotic_cat->hypnotize(  );
+?>
+
+
+------------------------------
+○例 5-21 $some_variableの参照
+<?php
+$some_variable = "Hello World!";
+$some_reference = &$some_variable;
+$some_reference = "Guten Tag World!";
+echo $some_variable;
+echo $some_reference;
+?>
+
+
+******
+6章
+******
+
+------------------------------
+○例 6-1 arrayを使用して平日の配列を作成する
+<?php
+$weekdays = array('Monday',
+                  'Tuesday',
+                  'Wednesday',
+                  'Thursday',
+                  'Friday',
+                  'Saturday',
+                  'Sunday');
+?>
+
+
+------------------------------
+○例 6-2 形に関する連想配列の作成
+<?php
+$shapes = array('Soda Can' => 'Cylinder',
+                'Note Pad' => 'Rectangle',
+                'Apple' => 'Sphere',
+                'Orange' => 'Sphere',
+                'Phonebook' => 'Rectangle');
+?>
+
+
+------------------------------
+○例 6-3 配列から1つの値を表示
+<?php
+$shapes = array('Soda can' => 'Cylinder',
+                'Notepad' => 'Rectangle',
+                'Apple' => 'Sphere',
+                'Orange' => 'Sphere',
+                'Phonebook' => 'Rectangle');
+print "A notepad is a {$shapes['Notepad']}.";
+?>
+
+
+------------------------------
+○例 6-4 ループ処理で配列の内容を表示する
+<?php
+$shapes = array('Soda can' => 'Cylinder',
+                'Notepad' => 'Rectangle',
+                'Apple' => 'Sphere',
+                'Orange' => 'Sphere',
+                'Phonebook' => 'Rectangle');
+foreach ($shapes as $key => $value) {  # 連想配列には$key（キー）と$value（値）が含まれる
+
+    print "The $key is a $value.<br />";
+}
+?>
+
+
+------------------------------
+○例 6-5 配列の要素を数える
+<?php
+$shapes = array('Soda can' => 'Cylinder',
+                'Notepad' => 'Rectangle',
+                'Apple' => 'Sphere',
+                'Orange' => 'Sphere',
+                'Phonebook' => 'Rectangle');
+$numElements = count($shapes);
+print "The array has $numElements elements.<br />";
+?>
+
+
+------------------------------
+○例 6-6 sort関数でアルファベット順に並べる
+<?php
+$shapes = array("rectangle", "cylinder", "sphere");
+sort($shapes);
+//foreachループは配列から各要素を取得して
+//値を$keyに格納してからコードを実行する
+foreach ($shapes as $key => $val) {
+    echo "shapes[" . $key . "] = " . $val . "<br />";
+}
+?>
+
+
+------------------------------
+○例 6-7 多次元配列の作成
+<?php
+$objects=array('Soda can' =>    array('Shape'    => 'Cylinder',
+                                      'Color'    => 'Red',
+                                      'Material' => 'Metal'),
+               'Notepad' =>    array('Shape'    => 'Rectangle',
+                                      'Color'    => 'White',
+                                      'Material' => 'Paper'),
+               'Apple' =>       array('Shape'    => 'Sphere',
+                                      'Color'    => 'Red',
+                                      'Material' => 'Fruit'),
+               'Orange' =>      array('Shape'    => 'Sphere',
+                                      'Color'    => 'Orange',
+                                      'Material' => 'Fruit'),
+               'Phonebook' =>  array('Shape'    => 'Rectangle',
+                                      'Color'    => 'Yellow',
+                                      'Material' => 'Paper'));
+echo $objects['Soda can']['Shape'];
+?>
+
+
+------------------------------
+○例 6-8 多次元配列を表示する
+<?php
+foreach ($objects as $obj_key => $obj)
+{
+    echo "$obj_key:<br>";
+    while (list ($key,$value)=each ($obj))
+    {
+        echo "$key = $value ";
+    }
+    echo "<br />";
+}
+?>
+
+
+------------------------------
+○例 6-9 extractで連想配列を処理する
+<?php
+$shapes = array('Sodacan' => 'Cylinder',
+                'Notepad' => 'Rectangle',
+                'Apple' => 'Sphere',
+                'Orange' => 'Sphere',
+                'Phonebook' => 'Rectangle');
+
+extract($shapes);
+// ここで、$Sodacan、$Notepad、$Apple、$Orange、$Phonebookがセットされる
+echo $Apple;
+echo "<br />";
+echo $Notepad;
+?>
+
+
+------------------------------
+○例 6-10 EXTR_PREFIX_ALLを指定してextractを実行
+<?php
+$Apple="Computer";
+$shapes=array('SodaCan' => 'Cylinder',
+              'NotePad' => 'Rectangle',
+              'Apple' => 'Sphere',
+              'Orange' => 'Sphere',
+              'PhoneBook' => 'Rectangle');
+
+extract($shapes,EXTR_PREFIX_ALL,"shapes");
+//$shapes_SodaCan、$shapes_NotePad、$shapes_Apple、$shapes_Orange、
+//$shapes_PhoneBookが作成される
+
+echo "Apple is $Apple.<br />";
+echo "Shapes_Apple is $shapes_Apple";
+echo "<br />";
+echo "Shapes_NotePad is $shapes_NotePad";
+?>
+
+
+------------------------------
+○例 6-11 数値インデックスの配列でEXTR_PREFIX_ALLを使用する
+<?php
+$shapes=array( 'Cylinder',
+               'Rectangle');
+extract($shapes,EXTR_PREFIX_ALL,"shapes");
+echo "Shapes_0 is $shapes_0 <br />";
+echo "Shapes_1 is $shapes_1";
+?>
+
+
+******
+7章
+******
+
+------------------------------
+○例 7-1 booksテーブルとauthorsテーブルの作成
+CREATE TABLE books (
+title_id INT NOT NULL AUTO_INCREMENT,
+title VARCHAR (150),
+pages INT,
+PRIMARY KEY (title_id));
+
+CREATE TABLE authors (
+author_id INT NOT NULL AUTO_INCREMENT,
+title_id INT NOT NULL,
+author VARCHAR (125),
+PRIMARY KEY (author_id));
+
+
+------------------------------
+○例 7-2 サンプルデータの作成
+mysql> CREATE TABLE books (
+    -> title_id INT NOT NULL AUTO_INCREMENT,
+    -> title VARCHAR (150),
+    -> pages INT,
+    -> PRIMARY KEY (title_id));
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> CREATE TABLE authors (
+    -> author_id INT NOT NULL AUTO_INCREMENT,
+    -> title_id INT,
+    -> author VARCHAR (125),
+    -> PRIMARY KEY (author_id));
+Query OK, 0 rows affected (0.06 sec)
+
+
+------------------------------
+○例 7-3 user_idとtitle_idの組み合わせにpurchase_idを割り当てるpurchasesテーブルを作成してデータを追加するSQL
+CREATE TABLE purchases (
+purchase_id int NOT NULL AUTO_INCREMENT,
+user_id varchar(10) NOT NULL,
+title_id int(11) NOT NULL,
+purchased timestamp NOT NULL default CURRENT_TIMESTAMP,
+PRIMARY KEY  (purchase_id));
+INSERT INTO `purchases` VALUES (1, 'mdavis', 2, '2005-11-26 17:04:29');
+INSERT INTO `purchases` VALUES (2, 'mdavis', 1, '2005-11-26 17:05:58');
+
+
+******
+8章
+******
+
+------------------------------
+○例 8-1 my_backup_of_store.sqlの内容
+-- MySQL dump 10.10
+--
+-- Host: localhost    Database: store
+-- ------------------------------------------------------
+-- Server version       5.0.24a-Debian_4-log
+
+-- Table structure for table `authors`
+--
+DROP TABLE IF EXISTS `authors`;
+CREATE TABLE `authors` (
+  `author_id` int(11) NOT NULL auto_increment,
+`title_id` int(11) NOT NULL default '0',
+  `author` varchar(125) default NULL,
+  PRIMARY KEY  (`author_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+--
+-- Dumping data for table `authors`
+--
+/*!40000 ALTER TABLE `authors` DISABLE KEYS */;
+LOCK TABLES `authors` WRITE;
+INSERT INTO `authors` VALUES (1,1,'Ellen Siever'),(2,1,'Aaron Weber'),(3,2,'Arnold Robbins'),(4,2,'Nelson Beebe');
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `authors` ENABLE KEYS */;
+
+
+------------------------------
+○例 8-2 CSVフォーマットの書籍
+1,Linux in a Nutshell,476
+2,Classic Shell Scripting,256
+
+
+------------------------------
+○例 8-3 簡単なインデックスの作成
+CREATE UNIQUE INDEX authind ON authors (author);
+
+
+------------------------------
+○例 8-4 CONCATを使用して列を結合する
+SELECT CONCAT(title,' has ',pages,' pages.') FROM books;
+
+
+------------------------------
+○例 8-5 文字列の長さの算出
+SELECT CONCAT(title,' has ',LENGTH(title), ' characters.') FROM books;
+
+
+------------------------------
+○例 8-6 書籍名の大文字と小文字の変換
+SELECT UCASE(title), LCASE(title) from books;
+
+
+------------------------------
+○例 8-7 LEADINGオプションを使用して0を取り除く
+SELECT TRIM(LEADING '0' from '0000Example00000');
+
+
+------------------------------
+○例 8-8 TRAILINGオプションを使ったTRIMの実行
+SELECT TRIM(TRAILING '0' from '0000Example00000');
+
+
+------------------------------
+○例 8-9 著者名から文字列を検索
+SELECT author, LOCATE('on',author) FROM authors;
+
+
+------------------------------
+○例 8-10 LEFT、RIGHT、SUBSTRを使用して電話番号をフォーマットする
+SELECT CONCAT(
+                  '(',
+                  LEFT('6128238193',3),
+                  ')',
+                  SUBSTR('6128238193',4,3),
+                  '-',
+                  RIGHT('6128238193', 4)
+             );
+
+
+------------------------------
+○例 8-11 WEEKDAYを使用して曜日を取得
+SELECT WEEKDAY('1964-10-12');
+
+
+------------------------------
+○例 8-12 DAYNAMEを使用して曜日を曜日名で取得する
+SELECT DAYNAME('1964-10-12');
+
+
+------------------------------
+○例 8-13 年初からの日数を求める
+SELECT DAYOFYEAR('2006-1-1'),
+       DAYOFYEAR('2006-12-24');
+
+
+------------------------------
+○例 8-14 purchasesテーブルでMONTHとMONTHNAMEを使用する
+SELECT purchased,MONTH(purchased),MONTHNAME(purchased) FROM purchases;
+
+
+------------------------------
+○例 8-15 HOURとMINUTEで時間を処理する
+SELECT CONCAT_WS(':',hour('4:46:45'),MINUTE('4:46:45'));
+
+
+------------------------------
+○例 8-16 DATE_SUBを使用して日付を引く
+SELECT DATE_SUB(NOW( ), INTERVAL 12 DAY);
+
+
+------------------------------
+○例 8-17 マイナス演算子による日付の計算
+SELECT NOW( ) - INTERVAL 12 DAY;
+
+
+------------------------------
+○例 8-18 コロンで区切られた時刻をDATE_FORMATで出力する
+SELECT DATE_FORMAT('2006-12-24 09:09:23', '%h:%i:%s');
+
+
+------------------------------
+○例 8-19 トランザクションの使用
+※日本語でテストする場合、「latin1」を、「ujis」などの日本語の文字コードに変更する。
+
+CREATE TABLE `books_innodb` (
+  `title_id` int(11) NOT NULL auto_increment,
+  `title` varchar(150) default NULL,
+  `pages` int(11) default NULL,
+  PRIMARY KEY  (`title_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+INSERT INTO `books_innodb` (`title_id`, `title`, `pages`) VALUES
+(1, 'Linux in a Nutshell', 476),
+(2, 'Classic Shell Scripting', 558);
+
+start transaction;
+delete from books_innodb where title_id = 1;
+delete from books_innodb where title_id = 2;
+rollback;
+
+
+******
+9章
+******
+
+------------------------------
+○例 9-1 データベースログイン情報を設定するファイルの例
+<?php
+$db_host='ホスト名';
+$db_database='データベース名';
+$db_username='ユーザ名';
+$db_password='パスワード';
+?>
+
+
+------------------------------
+○例 9-2 db_login.phpの設定例
+<?php
+$db_host='localhost';
+$db_database='test';
+$db_username='test';
+$db_password='yourpass';
+?>
+
+
+------------------------------
+○例 9-3 テストデータを再作成するSQL
+※日本語でテストする場合、「latin1」を、「ujis」などの日本語の文字コードに変更する。
+
+--
+-- Table structure for table authors
+--
+DROP TABLE IF EXISTS authors;
+CREATE TABLE authors (
+  author_id int(11) NOT NULL auto_increment,
+  title_id int(11) NOT NULL default '0',
+  author varchar(125) default NULL,
+  PRIMARY KEY  (author_id)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+--
+-- Dumping data for table authors
+--
+INSERT INTO authors VALUES (1,1,'Ellen Siever'),(2,1,'Aaron Weber'),
+                           (3,2,'Arnold Robbins'),(4,2,'Nelson H.F. Beebe');
+--
+-- Table structure for table books
+--
+DROP TABLE IF EXISTS books;
+CREATE TABLE books (
+  title_id int(11) NOT NULL auto_increment,
+  title varchar(150) default NULL,
+  pages int(11) default NULL,
+  PRIMARY KEY  (title_id)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+--
+-- Dumping data for table books
+--
+INSERT INTO books VALUES (1,'Linux in a Nutshell',476),(2,'Classic Shell
+Scripting',256);
+--
+-- Table structure for table purchases
+--
+DROP TABLE IF EXISTS purchases;
+CREATE TABLE purchases (
+  id int(11) NOT NULL auto_increment,
+  user varchar(10) default NULL,
+  title varchar(150) default NULL,
+  day date default NULL,
+  PRIMARY KEY  (id)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+--
+-- Dumping data for table purchases
+--
+LOCK TABLES purchases WRITE;
+INSERT INTO purchases VALUES (1,'Mdavis','Regular Expression Pocket Reference',
+                              '2005-02-15'),
+                             (2,'Mdavis','JavaScript & DHTML Cookbook','2005-02-10');
+
+
+------------------------------
+○例 9-4 接続文字列をインクルードしてmysql_connectを実行（db_test.php）
+// ログイン情報をインクルードする
+include('db_login.php');
+// 接続する
+$connection = mysql_connect($db_host, $db_username, $db_password);
+if (!$connection){
+    die ("Could not connect to the database: <br />". mysql_error(  ));
+}
+
+
+------------------------------
+○例 9-5 書籍と著者の表示
+<?php
+// ログイン情報をインクルードする
+include('db_login.php');
+// 接続する
+$connection = mysql_connect( $db_host, $db_username, $db_password );
+if (!$connection){
+   die ("Could not connect to the database: <br />". mysql_error(  ));
+}
+// データベースを選択する
+$db_select=mysql_select_db($db_database);
+if (!$db_select){
+   die ("Could not select the database: <br />". mysql_error(  ));
+}
+// クエリを作成する
+$query = "SELECT * FROM books NATURAL JOIN authors";
+// クエリの実行
+$result = mysql_query( $query );
+if (!$result){
+   die ("Could not query the database: <br />". mysql_error(  ));
+}
+
+// 結果から行を取得して表示する
+while ($result_row = mysql_fetch_row(($result))){
+       echo 'Title: '.$result_row[1] . '<br />';
+       echo 'Author: '.$result_row[4] . '<br /> ';
+       echo 'Pages: '.$result_row[2] . '<br /><br />';
+}
+//接続を閉じる
+mysql_close($connection);
+?>
+
+
+------------------------------
+○例 9-6 HTMLテーブルにクエリの結果を表示
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>Displaying in an HTML table</title>
+</head>
+<body>
+<table border="1">
+    <tr>
+        <th>Title</th>
+        <th>Author</th>
+    <th>Pages</th>
+</tr>
+<?php
+//ログイン情報をインクルードする
+include('db_login.php');
+// 接続する
+$connection = mysql_connect($db_host, $db_username, $db_password);
+if (!$connection){
+    die("Could not connect to the database: <br />". mysql_error(  ));
+}
+// データベースを選択する
+$db_select = mysql_select_db($db_database);
+if (!$db_select){
+    die ("Could not select the database: <br />". mysql_error(  ));
+}
+// クエリを作成する
+$query = "SELECT * FROM books NATURAL JOIN authors";
+// クエリを実行する
+$result = mysql_query($query);
+if (!$result){
+    die ("Could not query the database: <br />". mysql_error(  ));
+}
+// 結果から行を取得して表示する
+while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    $title = $row["title"];
+    $author = $row["author"];
+    $pages = $row["pages"];
+    echo "<tr>";
+    echo "<td>$title</td>";
+    echo "<td>$author</td>";
+    echo "<td>$pages</td>";
+    echo "</tr>";
+}
+// 接続を閉じる
+mysql_close($connection);
+?>
+</table>
+</body>
+</html>
+
+
+------------------------------
+○例 9-7 PEAR DBによるbooksテーブルの表示
+<?php
+
+include('db_login.php');
+require_once('DB.php');
+
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+
+if (DB::isError($connection)){
+    die("Could not connect to the database: <br />".DB::errorMessage($connection));
+}
+
+$query = "SELECT * FROM books NATURAL JOIN authors";
+$result = $connection->query($query);
+
+if (DB::isError($result)){
+    die("Could not query the database:<br />$query ".DB::errorMessage($result));
+}
+
+echo('<table border="1">');
+echo '<tr><th>Title</th><th>Author</th><th>Pages</th></tr>';
+
+while ($result_row = $result->fetchRow(  )) {
+    echo "<tr><td>";
+    echo $result_row[1] . '</td><td>';
+    echo $result_row[4] . '</td><td>';
+    echo $result_row[2] . '</td></tr>';
+}
+
+echo("</table>");
+$connection->disconnect(  );
+
+?>
+
+
+------------------------------
+○例 9-8 PEAR::MDB2によるbooksテーブルの表示
+<?php
+
+include('db_login.php');
+require_once('MDB2.php');
+
+//データベースログイン情報を配列に格納する
+$dsn = array(
+    'phptype'  => 'mysql',
+    'username' => $db_username,
+    'password' => $db_password,
+    'hostspec' => $db_host,
+    'database' => $db_database
+    );
+
+//接続をMDB2オブジェクトとして作成する
+$mdb2 = MDB2::factory($dsn);
+if (PEAR::isError($mdb2)) {
+    die($mdb2->getMessage(  ));
+}
+
+//行取得モードを「列名の連想配列」に
+$mdb2->setFetchMode(MDB2_FETCHMODE_ASSOC);
+
+$query = "SELECT * FROM books NATURAL JOIN authors";
+$result =$mdb2->query($query);
+if (PEAR::isError($result)){
+    die("Could not query the database:<br />$query ".$result->getMessage(  ));
+}
+
+//結果を表示する
+echo('<table border="1">');
+echo '<tr><th>Title</th><th>Author</th><th>Pages</th></tr>';
+
+//結果セットを反復処理する
+while ($row = $result->fetchRow(  )) {
+    echo "<tr><td>";
+    echo htmlentities($row['title']) . '</td><td>';
+    echo htmlentities($row['author']) . '</td><td>';
+    echo htmlentities($row['pages']) . '</td></tr>';
+}
+
+echo("</table>");
+
+//接続を閉じる
+$result->free(  );
+?>
+
+
+******
+10章
+******
+
+------------------------------
+○例 10-1 簡単なフォームの例
+<html>
+<head>
+    <title>Building a Form</title>
+</head>
+<body>
+<form action="<?php echo(htmlentities($_SERVER['PHP_SELF'])); ?>" method="GET">
+    <label>
+        Search: <input type="text" name="search" />
+    </label>
+    <input type="submit" value="Go!" />
+</form>
+</body>
+</html>
+
+
+------------------------------
+○例 10-2 検索フォームを変更して送信結果を処理する
+<html>
+<head>
+    <title>Building a Form</title>
+</head>
+<body>
+<?php
+$search = htmlentities($_GET["search"]);
+$self = htmlentities($_SERVER['PHP_SELF']);
+if ($search === '' ){
+    echo ('
+    <form action="'.$self.'" method="GET">
+        <label>Search: <input type="text" name="search" /></label>
+        <input type="submit" value="Go!" />
+    </form>');
+}
+else {
+    echo "The search string is: <strong>$search</string>";
+}
+?>
+</body>
+</html>
+
+＜Body＞例 10-2は、次のHTMLを出力する。
+    <html>
+    <head>
+        <title>Building a Form</title>
+    </head>
+    <body>
+    <form action="/oreilly/ch10/simple.php" method="GET" />
+         <label> Search: <input type="text" name="search" id="search">
+        </label>
+        <input type="submit" value="Go!" />
+    </form>
+    
+    </body>
+    </html>
+
+
+------------------------------
+○例 10-3 フォームの既定値
+<html>
+<head>
+    <title>Form Default Values</title>
+</head>
+<body>
+    <form action="<?php echo($_SERVER['PHP_SELF']); ?>" method="GET" />
+        <label>Min Price <input type="text" name="min_price" value="0" /></label><br />
+        <label>Max Price <input type="text" name="max_price" value="1000" /></label>
+        <br />
+        <input type="submit" value="Go!" />
+    </form>
+</body>
+</html>
+
+
+------------------------------
+○例 10-4 複数選択が可能な書籍タイプ
+<form>
+    <select name="media" multiple="multiple">
+        <option></option>
+        <option value=hard_cover>Hard Cover</option>
+        <option value=soft_cover>Soft Cover</option>
+        <option value=reference>Reference</option>
+        <option value=audio_book>Audio Books</option>
+    </select>
+</form>
+
+
+------------------------------
+○例 10-5 複数の選択肢を配置するためチェックボックス名を統一
+<html>
+<head>
+    <title>Using Default Checkbox Values</title>
+</head>
+<body>
+<?php
+$food = $_GET["food"];
+if (!empty($food)){
+    echo "The foods selected are: <strong>";
+    foreach($food as $foodstuff){
+        echo '<br />'.htmlentities($foodstuff);
+    }
+    echo "</strong>.";
+}
+else {
+    echo ('
+    <form action="'. htmlentities($_SERVER["PHP_SELF"]).'" method="GET">
+        <fieldset>
+            <label>
+                Italian
+                <input type="checkbox" name="food[]" value="Italian" />
+            </label>
+            <label>
+                Mexican
+                <input type="checkbox" name="food[]" value="Mexican" />
+            </label>
+            <label>
+                Chinese
+                <input type="checkbox" name="food[]" value="Chinese" checked="checked" />
+            </label>
+        </fieldset>
+        <input type="submit" value="Go!" />
+    </form> ');
+    }
+?>
+</body>
+</html>
+
+
+------------------------------
+○例 10-6 ラジオボタンや択一式の選択リストから送信された値をチェックする
+<?php
+$options = array('option 1', 'option 2', 'option 3');
+// チェックボックスや複数選択するリストから来る値
+$valid = true;
+if (is_array($_GET['input'])) {
+    $valid = true;
+    foreach($_GET['input'] as $input) {
+        if (!in_array($input, $options)) {
+           $valid = false;
+        }
+    }
+    if ($valid) {
+        // 入力値を処理する
+    }
+}
+?>
+
+
+------------------------------
+○例10-7 テキストボックスに値が入力されたかチェックする
+<?php
+$str = $_POST["text1"];
+
+// データが入力されたかチェックする
+if (isset($str)) {
+    // 入力値を処理する
+}
+else {
+    echo "<p>データが入力されていません</p>";
+}
+?>
+
+
+------------------------------
+○例 10-8 PHPによるフィートとメートルの変換
+<html>
+<head>
+    <title>Feet to meters conversion</title>
+</head>
+<body>
+<?php
+//フォームが送信されたか調べる
+$feet = htmlentities($_GET["feet"]);
+if ($_GET[feet] != NULL){
+    echo "<strong>$feet</strong> feet converts to <strong>";
+    echo $feet * 0.3048;
+    echo "</strong> meters.<br />";
+}
+?>
+<form action="<?php echo(htmlentities($_SERVER['PHP_SELF'])); ?>" method="GET">
+    <label>Feet:
+        <input type="text" name="feet" value="<?php echo $feet; ?>" />
+    </label>
+    <input type="submit" value="Convert!" />
+</form>
+</body>
+</html>
+
+
+------------------------------
+○例 10-9 ユーザ入力に基づくタイムゾーンの変換
+<html>
+<head>
+<title>Time Zone Converter</title>
+</head>
+<body>
+<?php
+// 標準的なタイムゾーンを格納する配列
+$time_zones = array("Asia/Hong_Kong",
+                "Africa/Cairo",
+                "Europe/Paris",
+                "Europe/Madrid",
+                "Europe/London",
+                "Asia/Tokyo",
+                "America/New_York",
+                "America/Los_Angeles",
+                "America/Chicago");
+// フォームが送信されたか調べる
+if ($_GET["start_time"] != NULL){
+    $start_time_input = htmlentities($_GET["start_time"]);
+    $start_tz = $_GET["start_tz"];
+    $end_tz = $_GET["end_tz"];
+    putenv("TZ=$start_tz");
+    $start_time = strtotime($start_time_input);
+    echo "<p><strong>";
+    echo date("h:i:sA",$start_time)."\n";
+    echo "</strong>";
+    putenv("TZ=$end_tz");
+
+    echo "in $start_tz becomes ";
+    echo "<strong> ";
+    echo date("h:i:sA",$start_time)."\n";
+    echo "</strong>";
+    echo " in $end_tz.</p><hr />";
+}
+?>
+<form action="<?php echo(htmlentities($_SERVER['PHP_SELF'])); ?>" method="GET">
+    <label>
+        Your Time:
+        <input type="text" name="start_time" value="<?php echo $start_time_input; ?>" />
+    </label> in
+    <select name="start_tz">
+    <?php
+    foreach ($time_zones as $tz) {
+        echo '<option';
+        if (strcmp($tz, $start_tz) == 0){
+            echo 'selected="selected"';
+        }
+        echo ">$tz</option>";
+    }
+    ?>
+    </select>
+    <p>Convert to:
+    <select name="end_tz">
+    <?php
+    foreach ($time_zones as $tz) {
+        echo '<option';
+        if (strcmp($tz, $end_tz) == 0){
+            echo ' selected="selected"';
+        }
+    echo ">$tz</option>";
+}
+?>
+</select></p>
+    <input type="submit" value="Convert!" />
+</form>
+</body>
+</html>
+
+
+------------------------------
+○例 10-10 フォーム処理とデータベースクエリを組み合わせる
+<?php
+function query_db($qstring) {
+    include('db_login.php');  //接続設定
+    require_once('DB.php');  //PEAR DBパッケージのインクルード
+    $connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+
+    if (DB::isError($connection)){  //接続エラーのチェック
+        die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+    }
+    if (get_magic_quotes_gpc(  )) {  //SQLインジェクションの防御
+        $qstring = stripslashes($qstring);
+    }
+    $qstring = mysql_real_escape_string($qstring);
+    $query = "SELECT title, pages, author_id, author FROM books NATURAL JOIN authors
+               WHERE books.title LIKE '%$qstring%'";  //クエリの作成
+    $result = $connection->query($query);
+    if (DB::isError($result)){
+        die("Could not query the database:<br />".
+        $query." ".DB::errorMessage($result));
+    }
+    echo ('<table border="1">');
+    echo "<tr><th>Title</th><th>Author</th><th>Pages</th></tr>";
+    while ($result_row = $result->fetchRow(  )) {
+        echo "<tr><td>";
+        echo $result_row[0] . '</td><td>';
+        echo $result_row[3] . '</td><td>';
+        echo $result_row[1] . '</td></tr>';
+    }
+    echo ("</table>");
+    $connection->disconnect(  );
+}
+?>
+<html>
+<head>
+    <title>Building a Form</title>
+</head>
+<body>
+<?php
+$search = htmlentities($_GET["search"]);
+$self = htmlentities($_SERVER['PHP_SELF']);
+if ($search != NULL){
+    echo "The search string is: <strong>$search</strong>.";
+    query_db($search);
+}
+else {
+    echo ('
+    <form action="'.$self.'" method="get">
+        <label>Search:
+            <input type="text" name="search"/>
+        </label>
+        <input type="submit" value="Go!" />
+    </form>
+    ');
+}
+
+?>
+</body>
+</html>
+
+
+------------------------------
+○例 10-11 作成するファイル（myapp/smarty.php）
+<?php
+// Smarty.class.phpへのパスを設定する
+require($_SERVER['DOCUMENT_ROOT']  . '/Smarty/Smarty.class.php');
+$smarty = new Smarty( );
+$smarty->template_dir = 'smarty/templates';
+$smarty->compile_dir = 'smarty/templates_c';
+$smarty->cache_dir = 'smarty/cache';
+$smarty->config_dir = 'smarty/configs';
+?>
+
+
+------------------------------
+○例 10-12 作成するサンプルテンプレート（index.tpl）
+<html>
+<head>
+    <title>Smarty</title>
+</head>
+<body>
+It's as easy as {$test}.
+</body>
+</html>
+
+
+------------------------------
+○例 10-13 テンプレートを使用してテーブルを表示する（myapp/search.php）
+<?php
+function query_db($qstring){
+    require_once("smarty.php");
+    require_once("../db_login.php");
+    require_once("DB.php");
+    $connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+    if (DB::isError($connection)){
+        die("Could not connect to the database: <br />". DB::errorMessage($connection));
+    }
+    $query = "SELECT * FROM books
+        NATURAL JOIN authors
+               WHERE books.title like '%$qstring%'";
+    $result = $connection->query($query);
+    if (DB::isError($result)){
+        die ("Could not query the database: <br>". $query. " ".DB::errorMessage($result));
+    }
+    while ($result_row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
+        $test[] = $result_row;
+    }
+    $connection->disconnect(  );
+    $smarty->assign('users', $test);
+    $smarty->display('table.tpl');
+}
+?>
+<html>
+<head>
+    <title>Building a Form</title>
+</head>
+<body>
+<?php
+$search = $_GET["search"];
+$self = htmlentities($_SERVER['PHP_SELF']);
+if ($search != NULL){
+    echo "The search string is: <strong>$search</strong>.";
+    query_db($search);
+}
+else {
+    echo '
+    <form action="'.$self.'" method="GET">
+         <label>
+             Search:
+             <input type="text" name="search" id="search" />
+         </label>
+         <input type="submit" value="Go!">
+    </form>';
+}
+?>
+</body>
+</html>
+
+
+------------------------------
+○例 10-14 テーブルを使用するテンプレート
+<table border=1>
+    <tr><th>Title</th><th>Author</th><th>Pages</th></tr>
+    {section name=mysec loop=$users}
+        {strip}
+        <tr>
+            <td>{$users[mysec].title}</td>
+            <td>{$users[mysec].author}</td>
+            <td>{$users[mysec].pages}</td>
+        </tr>
+        {/strip}
+    {/section}
+</table>
+
+
+
+******
+11章
+******
+
+------------------------------
+○例 11-1 数値を2進数で表示
+<?php
+printf("The computer stores the number 42 internally as %b.",42);
+?>
+
+
+------------------------------
+○例 11-2 printfで文字列の中に数値を配置する
+<?php
+printf("The computer stores the numbers 42, and 256 internally as %b and %b.",
+       42,256);
+?>
+
+
+------------------------------
+○例 11-3 同じ数値を違うフォーマットで表示
+<?php
+$value=42;
+printf("%d<br />",$value);
+printf("%b<br />",$value);
+printf("%c<br />",$value);
+printf("%f<br />",$value);
+printf("%o<br />",$value);
+printf("%s<br />",$value);
+printf("%x<br />",$value);
+printf("%X<br />",$value);
+?>
+
+
+------------------------------
+○例 11-4 左側を0で埋める
+<?php
+printf("Zero padding can help alignment %05d.", 42);
+?>
+
+
+------------------------------
+○例 11-5 左側を空白で埋める
+<?php
+printf("Space padding can be tricky in HTML % 5d.", 42);
+?>
+
+
+------------------------------
+○例 11-6 空白が表示されるように、<pre>と</pre>を追加する
+<?php
+printf("<pre>Space padding can be tricky in HTML % 5d.</pre>", 42);
+?>
+
+
+------------------------------
+○例 11-7 既定値の空白を左に埋める
+<?php
+printf("<pre>Space padding can be tricky in HTML %5d.</pre>", 42);
+?>
+
+
+------------------------------
+○例 11-8 右側を空白で埋める
+<?php
+printf("<pre>Space padding can be tricky in HTML %-5d.</pre>", 42);
+?>
+
+
+------------------------------
+○例 11-9 実数を通貨形式で表示
+<?php
+printf("Please pay $%.2f. ", 42.4242);
+?>
+
+
+------------------------------
+○例 11-10 変数に結果を格納するsprintf
+<?php
+$total = sprintf("Please pay $%.2f. ", 42.4242 );
+echo $total;
+?>
+
+
+------------------------------
+○例 11-11 文字列の長さを求める
+<?php
+$password="scr1";
+
+if (strlen($password) <= 5){
+
+    echo("Passwords must be at least 5 characters long.");
+}
+else {
+    echo ("Password accepted.");
+}
+?>
+
+
+------------------------------
+○例 11-12 大文字と小文字を変換する関数
+<?php
+$username="John Doe";
+echo("$username in uppercase is ".strtoupper($username).".<br />");
+echo("$username in lowercase is ".strtolower($username).".<br />");
+echo("$username in first letter uppercase is ".ucwords($username).".<br />");
+?>
+
+
+
+------------------------------
+○例 11-13 ある文字列に、指定した文字列が含まれるか調べる
+<?php
+$password="secretpassword1";
+
+if (strstr($password,"password")){
+    echo('Passwords cannot contain the word "password".');
+}
+else {
+    echo ("Password accepted.");
+}
+?>
+
+
+------------------------------
+○例 11-14 複数の文字列関数を使用して文字列の一部を抽出する
+<?php
+$test_string="testing testing Username:Michele Davis";
+$position=strpos($test_string,"Username:");
+
+//「Username:」の長さを加算する
+$start=$position+strlen("Username:");
+
+echo "$test_string<br />";
+echo "$position<br />";
+echo substr($test_string,$start);
+?>
+
+
+------------------------------
+○例 11-15 タイムスタンプの出力
+<?php
+$timestamp= time( );
+echo $timestamp;
+?>
+
+
+------------------------------
+○例 11-16 いつも使う形で日付と時刻を表示する
+<?php
+$timestamp= time( );
+echo date("m/d/y G:i:sa",$timestamp);
+?>
+
+
+------------------------------
+○例 11-17 日付を2日加算する
+<?php
+$timestamp= time( );
+echo date("m/d/y G.i:s",$timestamp);
+$seconds=2*24*60*60;
+$timestamp+=$seconds;
+echo "<br />new dates is:";
+echo date("m/d/y G.i:s",$timestamp);
+?>
+
+
+------------------------------
+○例 11-18 2つの日付の検証
+<?php
+echo("Validating: 4/31/2005<br />");
+if (checkdate(4,31,2005)) {
+    echo('Date accepted.');
+}
+else {
+    echo ('Invalid date.');
+}
+echo("<br />");
+echo("Validating: 5/31/2005<br />");
+if (checkdate(5,31,2005)) {
+    echo('Date accepted.');
+}
+else {
+    echo ('Invalid date.');
+}
+?>
+
+
+------------------------------
+○例 11-19 日付の構成要素からタイムスタンプを作成する
+<?php
+echo("Validating: 5/31/2005<br />");
+if (checkdate(5,31,2005)) {
+    echo('Date accepted: ');
+    $new_date=mktime(18,05,35,5,31,2005);
+    echo date("r",$new_date);
+}
+else {
+    echo ('Invalid date.');
+}
+?>
+
+
+------------------------------
+○例 11-20 ファイルが存在するか確認する（file_exists.php）
+<?php
+$file_name="file_exists.php";
+
+if(file_exists($file_name)) {
+    echo ("$file_name does exist.");
+}
+else {
+    echo ("$file_name does not exist.");
+}
+?>
+
+
+------------------------------
+○例 11-21 ファイルのパーミッションの確認
+<?php
+$file_name="permissions.php";
+
+if(is_readable($file_name)) {
+    echo ("The file $file_name is readable.<br />");
+}
+else {
+    echo ("The file $file_name is not readable.<br />");
+}
+if(is_writeable($file_name)) {
+    echo ("The file $file_name is writeable.<br />");
+}
+else {
+    echo ("The file $file_name is not writeable.<br />");
+}
+//Windowsで実行するにはPHP 5.0.0以降が必要
+if(is_executable($file_name)) {
+    echo ("The file $file_name is executable.<br />");
+}
+else {
+    echo ("The file $file_name is not executable.<br />");
+}
+?>
+
+
+------------------------------
+○例 11-22 file_exists、touch、unlinkを同時に使用する
+<?php
+$file_name="test.txt";
+
+if(file_exists($file_name)) {
+    echo ("$file_name does exist.<br />");
+}
+else {
+    echo ("The file $file_name does not exist.<br />");
+    touch($file_name);
+}
+if(file_exists($file_name)) {
+    echo ("The file $file_name does exist.<br />");
+    unlink($file_name);
+}
+else {
+    echo ("The file $file_name does not exist.<br />");
+}
+if(file_exists($file_name)) {
+    echo ("The file $file_name does exist.<br />");
+}
+else {
+    echo ("The file $file_name does not exist.<br />");
+}
+?>
+
+
+------------------------------
+○例 11-23 ファイル名の変更
+<?php
+$file_name="test.txt";
+touch($file_name); //前のサンプルで削除されたのでもう一度作成する
+
+$new_file_name="production.txt";
+$status=rename($file_name,$new_file_name);
+if ($status) {
+    echo ("Renamed file.");
+}
+?>
+
+
+------------------------------
+○例 11-24 ファイルのアップロード画面
+<html>
+<head></head>
+<body>
+<form action="<?php echo(htmlspecialchars($_SERVER['PHP_SELF']))?>" method="post" enctype="multipart/form-data">
+    <br /><br />
+    Choose a file to upload:<br />
+    <input type="file" name="upload_file">
+    <br />
+    <input type="submit" name="submit" value="submit">
+</form>
+
+</body>
+</html>
+
+
+------------------------------
+○例 11-25 アップロードされたファイルの存在をチェックする
+<?php
+
+if (!is_uploaded_file($HTTP_POST_FILES['upload_file']['tmp_name'])) {
+    $error = "You must upload a file!";
+    unlink($HTTP_POST_FILES['upload_file']['tmp_name']);
+}
+else {
+    //ファイル処理に進む
+}
+
+?>
+
+
+------------------------------
+○例 11-26 ファイルサイズの確認
+<?php
+$maxsize=28480;
+if ($HTTP_POST_FILES['upload_file']['size'] > $maxsize) {
+    $error = "Error, file must be less than $maxsize bytes.";
+    unlink($HTTP_POST_FILES['upload_file']['tmp_name']);
+}
+else {
+    //ファイル処理に進む
+}
+?>
+
+
+------------------------------
+○例 11-27 ファイルタイプの確認
+<?php
+
+if($HTTP_POST_FILES['upload_file']['type'] != "image/gif" AND
+$HTTP_POST_FILES['upload_file']['type'] != "image/pjpeg" AND
+$HTTP_POST_FILES['upload_file']['type'] !="image/jpeg") {
+    $error = "You may only upload .gif or .jpeg files";
+    unlink($HTTP_POST_FILES['upload_file']['tmp_name']);
+}
+else {
+     //ファイルフォーマットは問題ない
+}
+
+?>
+
+
+------------------------------
+○例 11-28 アップロードされたファイルの処理
+<?php
+$maxsize=28480; //最大アップロード許可サイズ（バイト）
+if (!$HTTP_POST_VARS['submit']) {
+    //print_r($HTTP_POST_FILES);
+    $error=" ";
+   //後続の処理を飛ばして
+   //アップロードフォームを表示
+}
+if (!is_uploaded_file($HTTP_POST_FILES['upload_file']['tmp_name']) AND
+!isset($error)) {
+    $error = "<b>You must upload a file!</b><br /><br />";
+    unlink($HTTP_POST_FILES['upload_file']['tmp_name']);
+}
+if ($HTTP_POST_FILES['upload_file']['size'] > $maxsize AND !isset($error)) {
+    $error = "<b>Error, file must be less than $maxsize bytes.</b><br /><br />";
+    unlink($HTTP_POST_FILES['upload_file']['tmp_name']);
+}
+if($HTTP_POST_FILES['upload_file']['type'] != "image/gif" AND
+$HTTP_POST_FILES['upload_file']['type'] != "image/pjpeg" AND
+$HTTP_POST_FILES['upload_file']['type'] !="image/jpeg" AND !isset($error)) {
+    $error = "<b>You may only upload .gif or .jpeg files.</b><br /><br />";
+    unlink($HTTP_POST_FILES['upload_file']['tmp_name']);
+}
+if (!isset($error)) {
+    move_uploaded_file($HTTP_POST_FILES['upload_file']['tmp_name'],
+                       "uploads/".$HTTP_POST_FILES['upload_file']['name']);
+    print "Thank you for your upload.";
+    exit;
+}
+else
+{
+    echo ("$error");
+}
+?>
+
+<html>
+<head></head>
+<body>
+<form action="<?php echo(htmlspecialchars($_SERVER['PHP_SELF']))?>" method="post" enctype="multipart/form-data">
+    Choose a file to upload:<br />
+    <input type="file" name="upload_file" size="80">
+    <br />
+    <input type="submit" name="submit" value="submit">
+</form>
+</body>
+</html>
+
+
+------------------------------
+○例 11-29 dfの実行と結果の表示
+<?php
+exec(escapeshellcmd("df"),$output_lines,$return_value);
+echo ("Command returned a value of $return_value.");
+echo "</pre>";
+foreach ($output_lines as $output) {
+    echo "$o";
+}
+echo "</pre>";
+?>
+
+
+
+******
+12章
+******
+
+------------------------------
+○例 12-1 xhtml 1.0 strictとして定義されたドキュメント
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Document Type Declaration Example</title>
+    </head>
+    <body>
+        <p>The content of the page goes here.</p>
+    </body>
+</html>
+
+
+------------------------------
+○例 12-2 検証ページへのリンク（validate.html）
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Document Type Declaration Example</title>
+    </head>
+    <body>
+        <p>The content of the page goes here.
+                <a href="http://validator.w3.org/check/referer">Validate</a> </p>
+    </body>
+</html>
+
+
+------------------------------
+○例 12-3 エラーになる記述をいくつか追加（validate_error.html）
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Document Type Declaration Example</title>
+    </head>
+    <body>
+        <p>The content of the page goes here.<br>
+            <a href="http://validator.w3.org/check/referer">Validate</a>
+    </body>
+</html>
+
+
+------------------------------
+○例 12-4 PHPからXHTMLドキュメントを作成する
+<?php
+//ブラウザがMIMEタイプ「application/xthml+xml」を解釈できるか調べる
+//IEがこのMIMEタイプを解釈できないので必要になる
+if(stristr($_SERVER["HTTP_ACCEPT"],"application/xhtml+xml")) {
+    header('Content-Type: application/xhtml+xml; charset=utf-8');
+}
+else {
+    header('Content-Type: text/html; charset=utf-8');
+}
+
+//ドキュメントタイプを作成する
+$doctype  = '<?xml version="1.0" encoding="UTF-8"?>';
+$doctype .= '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" ';
+$doctype .= '    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> ';
+
+//ヘッダを作成する
+$head=      '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">';
+$head    .= '    <head>';
+$head    .= '        <title>Document Type Declaration Example</title>';
+$head    .= '    </head>';
+
+//ボディテキストを作成する
+$body     = '    <body>';
+$body    .= '         <p>The content of the page goes here.</p>';
+$body    .= '    </body>';
+
+//フッタテキストを作成する
+$footer   = '</html>';
+
+//すべて出力する
+echo $doctype;
+echo $head;
+echo $body;
+echo $footer;
+?>
+
+
+
+******
+13章
+******
+
+------------------------------
+○例 13-1 テーブルを作成するPHPスクリプト（create_table.php）
+<?php
+include('db_login.php');
+require_once( 'DB.php' );
+    $connection = DB::connect( "mysql://$db_username:$db_password@$db_host/$db_database");
+if (!$connection)
+{
+    die ("Could not connect to the database: <br>". DB::errorMessage(  ));
+};
+    $query = 'CREATE TABLE purchases (
+                           purchase_id int(11) NOT NULL auto_increment,
+                           user_id varchar(10) NOT NULL,
+                           title_id int(11) NOT NULL,
+                           purchased timestamp NOT NULL,
+              PRIMARY KEY (purchase_id))';
+$result = $connection->query($query);
+if (DB::isError($result))
+{
+    die ("Could not query the database: <br>". $query. " ".DB::errorMessage($result));
+}
+echo ("Table created successfully!");
+$connection->disconnect(  );
+?>
+
+
+------------------------------
+○例 13-2 purchasesテーブルの削除（drop.php）
+<?php
+require_once('db_login.php');
+require_once('DB.php');
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+if (DB::isError($connection)){
+    die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+}
+$query = "DROP TABLE purchases";
+$result = $connection->query($query);
+if (DB::isError($result)){
+    die("Could not query the database: <br />". $query." ".DB::errorMessage($result));
+}
+echo "Table dropped successfully!";
+$connection->disconnect(  );
+?>
+
+
+------------------------------
+○例 13-3 変数に格納されたINSERT文を実行（insert.php）
+<?php
+require_once('db_login.php');
+require_once('DB.php');
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+if (DB::isError($connection)){
+    die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+}
+$query = "INSERT INTO purchases VALUES (NULL,'mdavis',2,NULL)";
+$result = $connection->query($query);
+if (DB::isError($result)){
+    die("Could not query the database: <br />". $query." ".DB::errorMessage($result));
+}
+echo "Inserted successfully!";
+$connection->disconnect(  );
+?>
+
+
+------------------------------
+○例 13-4 購入ボタンの役目をするリンクを組み込む（pear_purchase_example.php）
+<?php
+require_once('db_login.php');
+require_once('DB.php');
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+if (DB::isError($connection)){
+    die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+}
+$query = "SELECT * FROM books";
+$result = $connection->query($query);
+if (DB::isError($result)){
+    die("Could not query the database: <br />". $query." ".DB::errorMessage($result));
+}
+echo '<table border="1">';
+echo "<tr><th>Title</th><th>Pages</th><th>Buy</th></tr>";
+while ($result_row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
+    echo "<tr><td>";
+    echo $result_row["title"] . '</td><td>';
+    echo $result_row["pages"] . '</td><td>';
+    echo '<a href="purchase.php?title_id='.$result_row["title_id"].'">Click
+to purchase</a></td></tr>';
+}
+echo "</table>";
+$connection->disconnect(  );
+?>
+
+
+------------------------------
+○例 13-5 パラメータ「title_id」に基づいてユーザの要求を処理する（purchase.php）
+<?php
+require_once('db_login.php');
+require_once('DB.php');
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+if (DB::isError($connection)){
+    die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+}
+$title_id = $_GET["title_id"];
+if (get_magic_quotes_gpc(  )) {  //SQLインジェクションの防御
+    $title_id = stripslashes($title_id);
+}
+$title_id = mysql_real_escape_string($title_id);
+
+$user_id = 'mdavis';
+$query = "INSERT INTO purchases VALUES (NULL,'$user_id',$title_id,NULL)";
+$result = $connection->query($query);
+if (DB::isError($result)){
+    die("Could not query the database: <br />". $query." ".DB::errorMessage($result));
+}
+?>
+<html>
+<head>
+    <title>Thanks for your purchase!</title>
+<meta http-equiv="refresh" content="4; url=pear_purchase_example.php">
+</head>
+<body>
+Thanks for your purchase!<br />
+<?php
+
+$query = "SELECT * FROM purchases NATURAL JOIN books NATURAL JOIN authors";
+$result = $connection->query($query);
+if (DB::isError($result)){
+    die("Could not query the database: <br />". $query." ".DB::errorMessage($result));
+}
+echo '<table border="1">';
+echo "<tr><th>User</th><th>Title</th><th>Pages</th>";
+echo "<th>Author</th><th>Purchased</th></tr>";
+while ($result_row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
+    echo "<tr><td>";
+    echo $result_row["user_id"] . '</td><td>';
+    echo $result_row["title"] . '</td><td>';
+    echo $result_row["pages"] . '</td><td>';
+    echo $result_row["author"] . "</td><td>";
+    echo $result_row["purchased"] . "</td></tr>";
+}
+echo "</table>";
+
+$connection->disconnect(  );
+?>
+</body>
+</html>
+
+
+------------------------------
+○例 13-6 フォームから入力された書籍を追加する
+<?php
+// 書籍をデータベースに追加して表示する関数を定義する
+function insert_db($title, $pages){
+    require_once('db_login.php');
+    require_once('DB.php');
+    $connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+    if (DB::isError($connection)){
+        die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+    }
+
+    if (get_magic_quotes_gpc(  )) {  //SQLインジェクションの防御
+        $title = stripslashes($title);
+        $pages = stripslashes($pages);
+    }
+    $title = mysql_real_escape_string($title);
+    $pages = mysql_real_escape_string($pages);
+
+    // クエリには関数に渡すフォームデータが含まれる
+        $query = "INSERT INTO books VALUES (NULL,'$title', '$pages')";
+    $result = $connection->query($query);
+    if (DB::isError($result)){
+        die("Could not query the database: <br />". $query." ".DB::errorMessage($result));
+    }
+        echo "Inserted OK.<br />";
+    // テーブルのデータを表示する
+    $query = "SELECT * FROM books";
+    $result = $connection->query($query);
+    if (DB::isError($result)){
+        die("Could not query the database: <br />". $query." ".DB::errorMessage($result));
+    }
+    echo '<table border="1">';
+    echo "<tr><th>Title</th><th>Pages</th></tr>";
+    while ($result_row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
+        echo "<tr><td>";
+        echo $result_row["title"] . '</td><td>';
+        echo $result_row["pages"] . '</td></tr>';
+    }
+echo "</table>";
+$connection->disconnect(  );
+}
+
+?>
+<html>
+<head>
+    <title>Inserting From a Form</title>
+</head>
+<body>
+<?php
+// フォーム入力値を変数に格納する
+    $title = htmlentities($_GET["title"]);
+    $pages = htmlentities($_GET["pages"]);
+if (($title != NULL ) && ($pages != NULL)){
+    insert_db($title,$pages);
+}
+else {
+    // フォームを表示する
+    echo '
+    <h1>Enter a new title:</h1>
+        <form action="'.$_SERVER["PHP_SELF"].'" method="GET">
+            <label> Title: <input type="text" name="title" /> </label>
+            <label> Pages: <input type="text" name="pages" /> </label>
+    <input type="submit" value="Go!" />
+    </form>';
+}
+?>
+</body>
+</html>
+
+
+------------------------------
+○例 13-7 マジッククォートの設定確認
+<?php
+if (get_magic_quotes_gpc(  )) {
+    echo "Magic quotes are enabled.";
+} else {
+    echo "Magic quotes are disabled.";
+}
+?>
+
+
+------------------------------
+○例 13-8 mysql_real_escape()を適用後にマジッククォートを確認する
+if (get_magic_quotes_gpc(  )) {  //SQLインジェクションの防御
+    $qstring = stripslashes($qstring);
+}
+$qstring = mysql_real_escape_string($qstring);
+
+
+------------------------------
+○例 13-9 列の更新
+<?php
+require_once('db_login.php');
+require_once('DB.php');
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+if (DB::isError($connection)){
+    die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+}
+    $query = "UPDATE books SET pages=558 WHERE title_id=2";
+$result = $connection->query($query);
+if (DB::isError($result)){
+    die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+}
+echo "Updated successfully!";
+$connection->disconnect(  );
+?>
+
+
+------------------------------
+○例 13-10 購入データを削除するリンクを表示する（deletion_link.php）
+<?php
+require_once('db_login.php');
+require_once('DB.php');
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+if (DB::isError($connection)){
+    die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+}
+$query = "SELECT * FROM purchases NATURAL JOIN books";
+$result = $connection->query($query);
+if (DB::isError($result)){
+    die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+}
+echo '<table border="1">';
+echo "<tr><th>User</th><th>Title</th><th>Purchased</th><th>Remove</th></tr>";
+while ($result_row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
+    echo "<tr><td>";
+    echo $result_row["user_id"] . '</td><td>';
+    echo $result_row["title"] . '</td><td>';
+    echo $result_row["purchased"] . '</td><td>';
+        echo '<a href="delete.php?purchase_id='.$result_row["purchase_id"].'">Click to remove from purchases</a></td></tr>';
+}
+echo '</table>';
+$connection->disconnect(  );
+?>
+
+
+------------------------------
+○例 13-11 削除処理を実行する（delete.php）
+<?php
+require_once('db_login.php');
+require_once('DB.php');
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+if (DB::isError($connection)){
+    die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+}
+    $purchase_id = $_GET["purchase_id"];
+if (get_magic_quotes_gpc(  )) {  //SQLインジェクションの防御
+    $qstring = stripslashes($purchase_id);
+}
+$purchase_id = mysql_real_escape_string($purchase_id);
+    $query = "DELETE FROM purchases WHERE purchase_id = '$purchase_id'";
+$result = $connection->query($query);
+if (DB::isError($result)){
+    die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+}
+?>
+<html>
+<head>
+    <title>Item deleted!</title>
+    <!-- deletion_link.phpにリダイレクトする -->
+    <meta http-equiv="refresh" content="4; url=deletion_link.php"> 
+</head>
+<body>
+Item deleted!<br />
+<?php
+$query = "SELECT * FROM purchases NATURAL JOIN books NATURAL JOIN authors";
+$result = $connection->query($query);
+if (DB::isError($result)){
+    die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+}
+echo '<table border="1">';
+echo "<tr><th>User</th><th>Title</th><th>Pages</th>";
+echo "<th>Author</th><th>Purchased</th></tr>";
+while ($result_row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
+    echo "<tr><td>";
+    echo $result_row["user_id"] . '</td><td>';
+    echo $result_row["title"] . '</td><td>';
+    echo $result_row["pages"] . '</td><td>';
+    echo $result_row["author"] . "</td><td>";
+    echo $result_row["purchased"] . "</td></tr>";
+}
+echo "</table>";
+$connection->disconnect(  );
+?>
+</body>
+</html>
+
+
+------------------------------
+○例 13-12 PEAR DBの連番を使用して著者と書籍を結びつける
+<?php
+require_once('db_login.php');
+require_once('DB.php');
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+if (DB::isError($connection)){
+    die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+}
+
+    $connection->nextId('booksSequence');
+    $connection->nextId('booksSequence');
+    $connection->nextId('booksSequence');
+
+    $title_id = $connection->nextId('booksSequence');
+    if (PEAR::isError($title_id)) {
+        die($title_id->getMessage(  ));
+    }
+
+$query = "INSERT INTO books VALUES ($title_id,'Python in a Nutshell',600)";
+$result = $connection->query($query);
+if (DB::isError($result)){
+    die("Could not query the database: <br />$query ".DB::errorMessage($result));
+}
+$query = "INSERT INTO authors VALUES (NULL,$title_id,'Alex Martelli')";
+$result = $connection->query($query);
+if (DB::isError($result)){
+    die("Could not query the database: <br />$query ".DB::errorMessage($result));
+}
+echo "Inserted successfully!";
+$connection->disconnect(  );
+?>
+
+
+------------------------------
+○例 13-13 著者を1行で表示
+<?php
+require_once('db_login.php');
+require_once('DB.php');
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+if (DB::isError($connection)){
+    die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+}
+// テーブルを表示する
+$query = "SELECT * FROM books";
+$result = $connection->query($query);
+if (DB::isError($result)){
+    die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+}
+echo '<table border="1">';
+echo "<tr><th>Title</th><th>Pages</th><th>Authors</th></tr>";
+while ($result_row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
+    echo "<tr><td>";
+    echo htmlentities($result_row["title"]) . '</td><td>';
+    echo htmlentities($result_row["pages"]) . '</td><td>';
+    $title_id = mysql_real_escape_string($result_row["title_id"]);
+        $author_query = "SELECT * FROM authors WHERE title_id = $title_id";
+        $author_result = $connection->query($author_query);
+    if (DB::isError($author_result)){
+        die("Could not query the database: <br />".$author_query." ".
+                DB::errorMessage($author_result));
+    }
+        $author_count = $author_result->numRows(  );
+        if (0 == $author_count) {
+            echo 'none';
+        }
+        $counter = 0;
+        while ($author_result_row = $author_result->fetchRow(DB_FETCHMODE_ASSOC)) {
+            $counter++;
+            echo htmlentities($author_result_row["author"]);
+            if ($counter != $author_count) {
+                echo ', ';
+            }
+        }
+    echo '</td></tr>';
+}
+echo '</table>';
+$connection->disconnect(  );
+?>
+
+
+
+******
+14章
+******
+
+------------------------------
+○例 14-1 クッキーの作成
+<?php
+//setcookieは出力を伴う行よりも前で実行すること
+setcookie("username","michele");
+echo 'Cookie created.';
+?>
+
+
+------------------------------
+○例 14-2 クッキー「username」を参照する
+<?php
+if (!isset($_COOKIE['username']))
+{
+    echo ("Oops, the cookie isn't set!");
+}
+else
+{
+    echo ("The stored username is ". $_COOKIE['username'] . ".");
+}
+?>
+
+
+------------------------------
+○例 14-3 少し前の時刻を指定してクッキーを破棄する
+<?php
+//setcookieは出力を伴う行よりも前で実行すること
+setcookie("username","", time( )-10 );
+echo 'Rosebud.';
+?>
+
+
+------------------------------
+○例 14-4 PHPでHTTP認証を使用する
+<?php
+if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
+    header('WWW-Authenticate: Basic realm="Member Area"');
+    header("HTTP/1.0 401 Unauthorized");
+    echo "Please login with a valid username and password.";
+    exit;
+} else {
+   echo "You entered a username of: ".$_SERVER['PHP_AUTH_USER']." ";
+   echo "and a password of: ".$_SERVER['PHP_AUTH_PW'].".";
+}
+?>
+
+
+------------------------------
+○例 14-5 認証ダイアログから返された値の確認
+<?php
+$username = 'jon_doe';
+$password = 'MyNameIsJonDoe';
+if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
+    header('WWW-Authenticate: Basic realm="Member Area"');
+    header("HTTP/1.0 401 Unauthorized");
+    echo "You must enter in a username and password combination!";
+    exit;
+}
+elseif (strcmp($_SERVER['PHP_AUTH_USER'], $username) !== 0 ||
+    strcmp($_SERVER['PHP_AUTH_PW'], $password) !== 0) {
+    header('WWW-Authenticate: Basic realm="Member Area"');
+    header("HTTP/1.0 401 Unauthorized");
+    echo "Your username and password combination was incorrect!";
+    exit;
+}
+echo("You have successfully logged in!");
+?>
+
+
+------------------------------
+○例 14-6 ログイン情報を格納するusersテーブルを作成する
+CREATE TABLE users (user_id INT NOT NULL AUTO_INCREMENT,
+                    first_name VARCHAR(100),
+                    last_name VARCHAR(100),
+                    username VARCHAR(45),
+                    password CHAR(32),
+       PRIMARY KEY (user_id));
+
+
+------------------------------
+○例 14-7 暗号化されたパスワードを指定して、ユーザをデータベースに追加する
+INSERT INTO users (first_name, last_name, username, password)
+           VALUES
+                  ('Michele','Davis', 'mdavis', MD5('secret'));
+
+
+------------------------------
+○例 14-8 データベースへのログイン時に使用する情報
+<?php
+$db_host='localhost';
+$db_database='test';
+$db_username='test';
+$db_password='yourpass';
+?>
+
+
+------------------------------
+○例 14-9 データベースを使用してユーザ名とパスワードを確認する
+<?php
+require_once('db_login.php');
+require_once('DB.php');
+if (!isset($_SERVER['PHP_AUTH_USER']) ||
+    !isset($_SERVER['PHP_AUTH_PW'])) {
+    header('WWW-Authenticate: Basic realm="Member Area"');
+    header("HTTP/1.0 401 Unauthorized");
+    echo "You must enter in a username and password combination!";
+    exit;
+}
+$web_username = $_SERVER['PHP_AUTH_USER'];
+$web_password = $_SERVER['PHP_AUTH_PW'];
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+if (DB::isError($connection)){
+    die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+}
+$query = "SELECT user_id, username";
+$query.= "  FROM users WHERE ";
+$query.= "username='".$web_username."' AND password=MD5('".$web_password."') LIMIT 1";
+$result = $connection->query($query);
+if (DB::isError($result)){
+    die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+}
+if (!$row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
+    header('WWW-Authenticate: Basic realm="Member Area"');
+    header("HTTP/1.0 401 Unauthorized");
+    echo "Your username and password combination was incorrect!";
+    exit;
+}
+echo("You have successfully logged in as ".$row['username']."!");
+?>
+
+
+------------------------------
+○例 14-10 セッションを開始するコード
+<?php
+session_start( );
+?>
+
+
+------------------------------
+○例 14-11 session_registerによる変数の登録
+<?php
+//この方法は使わないように
+session_start( );
+session_register("hello");
+$hello = "Hello World";
+?>
+
+
+------------------------------
+○例 14-12 変数を$_SESSIONで登録する
+<?php
+session_start( );
+$_SESSION['hello'] = 'Hello World';
+echo $_SESSION['hello'];
+?>
+
+
+------------------------------
+○例 14-13 セッション継続中に前のページで格納されたセッション変数を参照する
+<?php
+session_start( );
+echo $_SESSION['hello'];
+?>
+
+
+------------------------------
+○例 14-14 ユーザが有効かどうか確認する
+<?php
+session_start(  );
+require_once('db_login.php');
+require_once('DB.php');
+if (empty($_SESSION['user_id'])) {
+    if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
+    header('WWW-Authenticate: Basic realm="Member Area"');
+    header("HTTP/1.0 401 Unauthorized");
+    echo "You must enter in a username and password combination!";
+    exit;
+}
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+if (DB::isError($connection)){
+    die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+}
+$username = mysql_real_escape_string($_SERVER['PHP_AUTH_USER']);
+$password = mysql_real_escape_string($_SERVER['PHP_AUTH_PW']);
+$query = "SELECT user_id, username FROM users WHERE
+username='".$username."' AND password=MD5('".$password."') LIMIT 1";
+$result = $connection->query($query);
+if(!($row = $result->fetchRow(DB_FETCHMODE_ASSOC))) {
+    header('WWW-Authenticate: Basic realm="Member Area"');
+    header("HTTP/1.0 401 Unauthorized");
+    echo "Your username and password combination was incorrect!";
+    exit;
+}
+$_SESSION['user_id'] = $row['user_id'];
+$_SESSION['username'] = $row['username'];
+}
+echo "You have successfully logged in as ".$_SESSION["username"].".";
+?>
+
+
+------------------------------
+○例 14-15 セッションの破壊
+<?php
+session_start(  );
+//セッションデータを処理する
+$_SESSION['username'] = 'Michele';
+
+// Webサイトからログアウトする
+session_destroy(  );
+echo "At this point we can still see the value of username as ";
+echo $_SESSION['username']."<br />";
+
+//配列$_SESSIONから値を破棄する
+unset ($_SESSION['username']);
+if (is_null($_SESSION['username'])) {
+    echo "Now the value of username is (blank)";
+}
+?>
+
+
+------------------------------
+○例 14-16 セッションタイムアウトの設定
+<IfModule mod_php4.c>
+    php_value session.gc_maxlifetime "1440"
+</IfModule>
+
+
+------------------------------
+○例 14-19 Auth_HTTPを使用してユーザを認証する
+<?php
+// Auth_HTTPを使用してアクセスを制限する
+require_once('db_login.php');
+require_once("Auth/HTTP.php");
+// pear DBと同じ接続文字列を使用する
+$AuthOpts = array('dsn' => "mysql://$db_username:$db_password@$db_host/$db_database",
+                  'table' => "users", // テーブル名
+                  'usernamecol' => "username", // ユーザ名の列
+                  'passwordcol' => "password", // パスワードの列
+                  'cryptType' => "md5" // パスワードの暗号化方法
+                 );
+$authenticate = new Auth_HTTP("DB", $AuthOpts);
+// レルム名を設定
+$authenticate->setRealm('Member Area');
+// 認証失敗時のメッセージ
+$authenticate->setCancelText('<h2>Access Denied</h2>');
+// 認証を開始
+$authenticate->start(  );
+// ユーザ名とパスワードをデータベースと照合
+if ($authenticate->getAuth(  )){
+    echo "Welcome back to our site ".$authenticate->username.".";
+}
+?>
+
+
+------------------------------
+○例 14-20 ユーザの追加情報の取得
+<?php
+// 追加情報を返すAuth_HTTPの例
+require_once('db_login.php');
+require_once("Auth/HTTP.php");
+// pear DBと同じ接続文字列を使用する
+$AuthOptions = array('dsn'=>"mysql://$db_username:$db_password@$db_host/$db_database",
+                     'table'=>"users", // テーブル名
+                     'usernamecol'=>"username", // ユーザ名の列
+                     'passwordcol'=>"password", // パスワードの列
+                     'cryptType'=>"md5", // パスワードの暗号化方法
+                     'db_fields'=>"*" // 他の列の取得を可能にする
+                    );
+$authenticate = new Auth_HTTP("DB", $AuthOptions);
+// レルム名を設定
+$authenticate->setRealm('Member Area');
+// 認証失敗時のメッセージ
+$authenticate->setCancelText('<h2>Access Denied</h2>');
+// 認証を開始
+$authenticate->start(  );
+// ユーザ名とパスワードをデータベースと照合
+if($authenticate->getAuth(  )){
+    echo "Welcome back to our site ".$authenticate->username.".<br />";
+    echo "Your full name is ";
+    echo $authenticate->getAuthData('first_name');
+    echo " ";
+    echo $authenticate->getAuthData('last_name').".";
+}
+?>
+
+
+
+******
+15章
+******
+
+------------------------------
+○例 15-1 Apacheの認証機能でスクリプトへのアクセスを制限する
+AuthType Basic
+AuthName "Administrators Only"
+AuthUserFile /usr/local/apache/passwd/passwords
+Require valid-user
+
+
+
+------------------------------
+○例 15-2 .htaccessで使用するパスワードを作成
+htpasswd -c /usr/local/apache/passwd/passwords mdavis
+
+
+------------------------------
+○例 15-3 md5とsha1の出力結果を比較する
+<?php
+echo "Encrypting <b>testing</b> using md5: ".md5("testing");
+echo "<br />";
+echo "Encrypting <b>testing</b> using sha1: ".sha1("testing");
+?>
+
+
+------------------------------
+○例 15-4 変数を初期化しないとセキュリティホールになる（sample.php）
+//check_username_and_password( )関数はTRUEまたはFALSEを返し
+//変数$accessは変更しない
+if (check_username_and_password(  )) {
+    //うまくログインできた
+    $access = TRUE;
+}
+if ($access) {
+    echo "Welcome to the administrative control panel.";
+    //ログインできたユーザのみ実行されるコード
+}
+else {
+    echo "Access denied";
+}
+?>
+
+
+------------------------------
+○例 15-5 register_globalsの設定に関係なく動作してしまうセッション変数（session_test.php）
+<?php
+session_start(  );
+if (isset($username)) {
+    $username=htmlentities($username);
+    echo "Hello $username";
+}
+else {
+    echo "Please login.";
+}
+?>
+
+
+------------------------------
+○例 15-6 きちんとスーパーグローバルの$_SESSIONを使用したセッション
+<?php
+session_start(  );
+if (isset($_SESSION['username'])) {
+        $username=htmlentities($_SESSION['username']);  //クロスサイトスクリプティングの回避
+    echo "Hello $username";
+} else {
+    echo "Please login.";
+}
+?>
+
+
+------------------------------
+○例 15-7 変数に注入された悪意を検知する
+<?php
+if (isset($_COOKIE['MAGIC_COOKIE'])) {
+    // MAGIC_COOKIEはクッキーから取得
+    // クッキーデータを検証すること
+}
+elseif (isset($_GET['MAGIC_COOKIE']) || isset($_POST['MAGIC_COOKIE'])) {
+    mail("admin@example.com", "Possible breakin attempt", $_SERVER['REMOTE_ADDR']);
+    echo "Security violation, admin has been alerted.";
+    exit;
+}
+else {
+   // MAGIC_COOKIEは$_REQUESTに格納されていない
+}
+?>
+
+
+------------------------------
+○例 15-8 セッションハイジャックのチェック
+<?php
+session_start(  );
+$user_check = md5($_SERVER['HTTP_USER_AGENT'] . $_SERVER['REMOTE_ADDR']);
+if (empty($_SESSION['user_data'])) {
+    session_regenerate_id(  );
+    echo ("New session, saving user_check.");
+    $_SESSION['user_data'] = $user_check;
+}
+if (strcmp($_SESSION['user_data'], $user_check) !== 0) {
+    session_regenerate_id(  );
+    echo ("Warning, you must reenter your session.");
+    $_SESSION = array(  );
+    $_SESSION['user_data'] = $user_check;
+}
+else {
+    echo ("Connection verified!");
+}
+?>
+
+
+------------------------------
+○例 15-9 session.save_pathの設定
+<?php
+    ini_set('session.save_path', '/home/user/sessions/');
+    session_start(  );
+?>
+
+
+------------------------------
+○例 15-10 データベースの標準的なエラーメッセージを非表示にする
+<?php
+require_once('db_login.php');
+$error = "Site down for maintenance, please check back.";
+$db_link = @mysql_connect($db_host, $db_username, $db_password) or die($error);
+@mysql_select_db($db_database, $db_link) or die($error);
+?>
+
+
+------------------------------
+○例 15-11 マジッククォートによる処理結果
+<?php
+if (is_null($_GET["search"])) {
+    $self=htmlentities($_SERVER['PHP_SELF']);
+    echo ("<form action=\"$self\" ");
+    echo ('method="get">
+           <label> Search: <input type="text" name="search" id="search"> </label>
+               <input type="submit" value="Go!">
+           </form>
+          ');
+}
+else {
+    $search= $_GET[search];
+    echo "The search string is: <strong>$search</strong>.";
+}
+?>
+
+
+------------------------------
+○例 15-12 マジッククォートが有効か確認
+<?php
+if (is_null($_GET["search"])) {
+    echo '<form method="'.htmlentities($_SERVER["PHP_SELF"]).'" method="GET">';
+    echo '    <label>';
+    echo '       Search:';
+    echo '       <input type="text" name="search" id="search" />';
+    echo '    </label>';
+    echo '    <input type="submit" value="Go!" />';
+    echo '</form>';
+    } else {
+    $search = $_GET["search"];
+
+    if (!get_magic_quotes_gpc(  )) {
+        $search = htmlentities($search);
+    }
+    if ($search != NULL ){
+        echo "The search string is: <strong>$search</strong>.";
+    }
+}
+?>
+
+
+
+******
+16章
+******
+
+------------------------------
+○例 16-1 送信前にフィールドを検証するフォームの作成
+<html>
+<head>
+   <script language="JavaScript1.2" SRC="source.js"></script>
+   <title>Sample Form</title>
+</head>
+
+<script language="JavaScript1.2">
+    function check_valid(form) {
+    var error = "";
+    error += verify_username(form.username.value);
+    error += verify_password(form.password.value);
+    error += verify_phone(form.phone.value);
+    error += verify_email(form.email.value);
+    if (error != "") {
+       alert(error);
+       return false;
+    }
+return true;
+}
+</script>
+
+<body bgcolor="#FFFFFF">
+    <form action="process.php" method="post"
+onSubmit="return check_valid(this)" id="test1" name="test1">
+    <table border="0" width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+            <td width="30%" ALIGN="right">Username</td>
+            <td width="70%">: <input type="text" name="username" /></td>
+        </tr>
+        <tr>
+            <td align="right">Password</TD>
+            <td>: <input type="password" NAME="password" /></td>
+        </tr>
+        <tr>
+            <td ALIGN="right">Phone</td>
+            <td>: <INPUT TYPE="phone" NAME="phone" /></td>
+        </tr>
+        <tr>
+            <td align="right">Email</td>
+            <td>: <input type="email" NAME="email" /></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td><input type="SUBMIT" value="Submit" /></td>
+        </tr>
+    </table>
+    </form>
+</body>
+</html>
+
+
+------------------------------
+○例 16-2 各フィールドを確認する関数（source.js）
+// ユーザ名は6文字から10文字で大文字でも小文字でもよく、アンダースコアも可
+function verify_username (strng) {
+var error = "";
+if (strng == "") {
+    error = "You didn't enter a username.\n";
+}
+    var illegalChars = /\W/; // 文字、数字、アンダースコアが可
+    if ((strng.length < 6) || (strng.length > 10)) {
+        error = "The username is the wrong length. It must be 6-10 characters.\n";
+    }
+    else if (illegalChars.test(strng)) {
+        error = "The username contains illegal characters.\n";
+    }
+    return error;
+}
+
+// パスワードは6文字から8文字で大文字でも小文字でもよく、数字も可
+function verify_password (strng) {
+    var error = "";
+    if (strng == "") {
+        error = "You didn't enter a password.\n";
+    }
+    var illegalChars = /[\W_]/; // 文字と数字のみ可
+    if ((strng.length <= 6) || (strng.length >= 8)) {
+        error = "The password is the wrong length. It must be 6-8 characters.\n";
+    }
+    else if (illegalChars.test(strng)) {
+        error = "The password contains illegal characters.\n";
+    }
+    else if (!((strng.search(/(a-z)+/)) && (strng.search(/(A-Z)+/)) &&
+(strng.search(/(0-9)+/)))) {
+        error = "The password must contain at least one uppercase letter, one lowercase letter, and one numeral.\n";
+    }
+    return error;
+}
+
+// メールアドレスの検証
+function verify_email (strng) {
+    var error="";
+    if (strng == "") {
+        error = "You didn't enter an email address.\n";
+    }
+
+    var emailFilter=/^.+@.+\..{2,3}$/;
+    if (!(emailFilter.test(strng))) {
+        error = "Please enter a valid email address.\n";
+    }
+    else {
+        // メールアドレスで許可されない文字をチェック
+        var illegalChars= /[\(\)\<\>\,\;\:\\\"\[\]]/;
+        if (strng.match(illegalChars)) {
+            error = "The email address contains illegal characters.\n";
+        }
+    }
+    return error;
+}
+
+// 電話番号は数字（区切り文字を取り除いて10桁）
+function verify_phone (strng) {
+var error = "";
+    if (strng == "") {
+       error = "You didn't enter a phone number.\n";
+    }
+    // 数字以外を取り除く
+    var stripped = strng.replace(/[\(\)\.\-\ ]/g, '');
+    if (isNaN(parseInt(stripped))) {
+        error = "The phone number contains illegal characters.";
+
+    }
+    if (!(stripped.length == 10)) {
+        error = "The phone number is the wrong length. Make sure you included an area code.\n";
+    }
+    return error;
+}
+
+
+------------------------------
+○例 16-3 preg_matchを使用して、「ple」で始まる部分を配列に格納する
+<?php
+$subject = "example";
+$pattern = '/^ple/';
+preg_match($pattern, $subject, $matches);
+print_r($matches);
+?>
+
+
+------------------------------
+○例 16-4 PHPでエラーメッセージを表示して、前回の入力値からフォームを再表示する
+<html>
+<head>
+<title>Sample Form</title>
+<script type="text/javascript" src="source.js"></script>
+<script type="text/javascript">
+function check_valid(form) {
+    var error = "";
+    error += verify_username(form.username.value);
+    error += verify_password(form.password.value);
+    error += verify_phone(form.phone.value);
+    error += verify_email(form.email.value);
+    if (error != "") {
+        alert(error);
+        return false;
+    }
+    return true;
+}
+</script>
+</head>
+<body>
+<?php
+// フォームがPOST送信か調べる
+if ($_POST["submit"]){
+    require_once('db_login.php');
+    require_once('DB.php');
+    $connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+    if (DB::isError($connection)){
+        die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+    }
+    // htmlentities関数を使用して、クロスサイトスクリプティング攻撃を防ぐ
+    $username = $_POST["username"];
+    $username=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($username) : $username);
+    $password = $_POST["password"];
+    $password=htmlentities(get_magic_quotes_gpc(  ) ? stripslashes($password) : $password);
+    $email = $_POST["email"];
+    $email=htmlentities(get_magic_quotes_gpc(  ) ? stripslashes($password) : $password);
+    $phone = $_POST["phone"];
+    $phone=htmlentities(get_magic_quotes_gpc(  ) ? stripslashes($phone) : $phone);
+    $error = "";
+
+    if (is_null($username == "")){
+        $error .= "Username must not be null.<br />";
+    }
+    if ($password == ""){
+        $error .= "Password must not be null.<br />";
+    }
+    if ($email == ""){
+        $error .= "Email must not be null.<br />";
+    }
+    if ($phone == ""){
+        $error .= "Phone must not be null.<br />";
+    }
+
+    // ユーザ名を抽出条件にしてデータを取得するクエリ
+    $query = "SELECT * FROM users WHERE username='$username'";
+    // クエリを実行する
+    $result = $connection->query($query);
+    if (DB::isError($result)){
+        die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+    }
+    $user_count = $result->numRows(  );
+    if ($user_count > 0) {
+        $error .= "Error: Username $username is taken already. Please select another.<br />";
+    }
+    if ($error){
+        echo $error;
+    } else {
+        echo "Username is available.";
+        exit;
+    }
+}
+// ユーザが存在するか判断して、フォームを再表示する
+?>
+<form action="<?php echo htmlentities($_SERVER["PHP_SELF"]); ?>" method="POST"
+onsubmit="return check_valid(this);" id="test1" name="test1">
+    <table>
+        <tr>
+            <td width="30%" align="right">Username:</td>
+                <td><input type="text" name="username" value="<?php echo ($username); ?>" /></td>
+        </tr>
+        <tr>
+            <td align="right">Password:</td>
+                <td><input type="password" name="password" value="<?php echo($password); ?>" />
+    </td>
+        </tr>
+        <tr>
+            <td align="right">Phone:</td>
+                <td><input type="phone" name="phone" value="<?php echo($phone); ?>" /></td>
+        </tr>
+        <tr>
+            <td align="right">Email:</td>
+                <td><input type="email" name="email" value="<?php echo($email); ?>" /></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td><input type="submit" name="submit" value="Submit" /></td>
+         </tr>
+    </table>
+</form>
+</body>
+</html>
+
+
+
+******
+17章
+******
+
+------------------------------
+○例 17-1 サイト全体の設定を定義するスクリプト（config.php）
+<?php
+// Smarty.class.phpへのフルパス
+require('/usr/share/php/Smarty/Smarty.class.php');
+$smarty = new Smarty( );
+
+$smarty->template_dir = '/home/www/htmlkb/smarty/templates';
+$smarty->compile_dir = '/home/www/htmlkb/smarty/templates_c';
+$smarty->cache_dir = '/home/www/htmlkb/smarty/cache';
+$smarty->config_dir = '/home/www/htmlkb/smarty/configs';
+
+$blog_title="Coffee Talk Blog";
+?>
+
+
+------------------------------
+○例 17-2 header.tpl
+<html>
+<head>
+    <title>{$blog_title}</title>
+</head>
+<body>
+<h1>Welcome to the {$blog_title}</h1>
+
+
+------------------------------
+○例 17-3 footer.tpl
+<hr>
+<a href='posts.php'>Home</a> || <a href='logout.php'>Logout</a>
+</body>
+</html>
+
+
+------------------------------
+○例 17-4 ログインスクリプト（login.php）
+<?php
+// Auth_HTTPでユーザ情報も返す例
+require_once('config.php');
+require_once('db_login.php');
+require_once('Auth/HTTP.php');
+// PEAR DBと同じ接続文字列を使用する
+$AuthOptions = array(
+                     'dsn'=>"mysql://$db_username:$db_password@$db_host/$db_database",
+                     'table'=>"users", // テーブル名
+                     'usernamecol'=>"username", // ユーザ名の列
+                     'passwordcol'=>"password", // パスワード列
+                     'cryptType'=>"md5", // パスワードの暗号化形式
+                     'db_fields'=>"*" // 他の列も取得可能にする
+);
+$authenticate = new Auth_HTTP("DB", $AuthOptions);
+// レルム名を設定
+$authenticate->setRealm('Member Area');
+// 認証エラー時のメッセージ
+$authenticate->setCancelText('<h2>Access Denied</h2>');
+// 認証の開始
+$authenticate->start(  );
+// ユーザ名とパスワードをデータベースと照合
+if ($authenticate->getAuth(  )) {
+    session_start(  );
+    $smarty->assign('blog_title',$blog_title);
+    $smarty->display('header.tpl');
+    // セッション変数の格納
+    $_SESSION['username'] = $authenticate->username;
+    $_SESSION['first_name'] = $authenticate->getAuthData('first_name');
+    $_SESSION['last_name'] = $authenticate->getAuthData('last_name');
+    $_SESSION['user_id'] = $authenticate->getAuthData('user_id');
+    echo "Login successful. Great to see you ";
+    echo $authenticate->getAuthData('first_name');
+    echo " ";
+    echo $authenticate->getAuthData('last_name').".<br />";
+    $smarty->display('footer.tpl');
+}
+?>
+
+
+------------------------------
+○例 17-5 postsテーブルを作成するSQL
+CREATE TABLE posts (
+                    post_id int(11) NOT NULL auto_increment,
+                    category_id int(11) NOT NULL,
+                    user_id int(11) NOT NULL,
+                    title varchar(150) NOT NULL,
+                    body text NOT NULL,
+                    posted timestamp,
+                    PRIMARY KEY (post_id)
+                   );
+
+
+------------------------------
+○例 17-6 categoriesテーブルを作成するSQL
+CREATE TABLE categories (
+                         category_id int(11) NOT NULL auto_increment,
+                         category varchar(150) NOT NULL,
+                         PRIMARY KEY (category_id)
+);
+
+
+------------------------------
+○例 17-7 commentsテーブルを作成するSQL
+CREATE TABLE comments (
+                       comment_id int(11) NOT NULL auto_increment,
+                       user_id int(11) NOT NULL,
+                       post_id int(11) NOT NULL,
+                       title varchar(150) NOT NULL,
+                       body text NOT NULL,
+                       posted timestamp,
+                       PRIMARY KEY (comment_id)
+                      );
+
+
+------------------------------
+○例 17-8 usersテーブルを作成するSQL(作成済みかもしれないが）
+CREATE TABLE users (
+                    user_id int(11) NOT NULL auto_increment,
+                    first_name varchar(100) NOT NULL,
+                    last_name varchar(100) NOT NULL,
+                    username varchar(45) NOT NULL,
+                    password varchar(32) NOT NULL,
+                    PRIMARY KEY (user_id));
+
+
+------------------------------
+○例 17-9 サンプルデータの追加
+INSERT INTO categories VALUES (1,'Press Releases');
+INSERT INTO categories VALUES (2,'Feature Requests');
+
+INSERT INTO posts VALUES (NULL,1,1,'PHP Version 12','PHP Version 12, to be
+released third quarter 2020. Featuring the artificial inteligence engine that
+writes the code for you.',NULL);
+INSERT INTO posts VALUES (NULL,1,1,'MySQL Version 8','Returns winning lotto
+number.',NULL);
+INSERT INTO posts VALUES (NULL,2,2,'Money Conversion',' Please add functions
+for converting between foreign currencies. ',NULL);
+
+INSERT INTO comments VALUES (NULL,1,1,'Correction','Release delayed till the
+year 2099',NULL);
+
+INSERT INTO users VALUES (NULL,'Michele','Davis','mdavis',md5('secret'));
+INSERT INTO users VALUES (NULL,'Jon','Phillips','jphillips',md5('password'));
+
+
+------------------------------
+○例 17-10 記事の内容とタイトルを一覧表示するスクリプト（posts.php）
+<?php
+session_start(  );
+require_once('config.php');
+require_once('db_login.php');
+require_once('DB.php');
+// ページヘッダを出力する
+$smarty->assign('blog_title',$blog_title);
+$smarty->display('header.tpl');
+// ログイン済みか確認する
+if (!isset($_SESSION['username'])) {
+    echo 'Please <a href="login.php">login</a>.';
+}
+else {
+    // データベースに接続する
+    $connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+
+    if (DB::isError($connection)){
+        die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+    }
+    // カテゴリとユーザ情報でクエリを作成する
+    $query = "SELECT * FROM users NATURAL JOIN posts NATURAL JOIN categories ORDER BY posted DESC";
+    // クエリを実行する
+    $result = $connection->query($query);
+    if (DB::isError($result)){
+        die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+    }
+    // 実行結果を配列に格納する
+    while ($result_row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
+        $test[] = $result_row;
+    }
+    // データをテンプレートに渡す
+    $smarty->assign('posts', $test);
+    // 渡したデータでテンプレートを表示する
+    $smarty->display('posts.tpl');
+    // データベース接続を閉じる
+    $connection->disconnect(  );
+    // ページフッタを表示する
+    $smarty->display('footer.tpl');
+}
+?>
+
+
+------------------------------
+○例 17-11 記事の表示レイアウトを定義するテンプレートファイル（posts.tpl）
+{section name=mysec loop=$posts}
+<a href="view_post.php?post_id={$posts[mysec].post_id}">{$posts[mysec].title}</a>
+by <b>{$posts[mysec].first_name} {$posts[mysec].last_name}</b>
+from the <b>{$posts[mysec].category}</b> category at <b>{$posts[mysec].posted}</b>.
+<br />
+{/section}
+<br />
+Click to <a href="modify_post.php?action=add">add</a> a posting.<br />
+
+
+------------------------------
+○例 17-12 記事の詳細表示とコメントの一覧表示（view_post.php）
+<?php
+
+session_start(  );
+
+require_once('config.php');
+require_once('db_login.php');
+require_once('DB.php');
+
+// ヘッダを表示する
+$smarty->assign('blog_title',$blog_title);
+$smarty->display('header.tpl');
+
+// ログイン済みか確認する
+if (!isset($_SESSION["username"])) {
+    echo 'Please <a href="login.php">login</a>.';
+    exit;
+}
+
+// データベースに接続する
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+
+if (DB::isError($connection)){
+    die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+}
+
+$post_id = $_GET["post_id"];
+$post_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($post_id) : $post_id);
+
+$query = "SELECT * FROM users NATURAL JOIN posts NATURAL JOIN categories
+                       WHERE post_id=$post_id";
+$result = $connection->query($query);
+
+if (DB::isError($result)){
+    die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+}
+
+while ($result_row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
+    $test[]=$result_row;
+}
+
+    $smarty->assign('owner_id',$_SESSION["user_id"]);
+    $query = "SELECT * FROM users NATURAL JOIN comments WHERE post_id=$post_id";
+    $result = $connection->query($query);
+
+if (DB::isError($result)){
+die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+}
+    $comment_count = $result->numRows(  );
+    while ($result_row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
+        $comments[] = $result_row;
+    }
+    $smarty->assign('posts',$test);
+    $smarty->assign('comments',$comments);
+    $smarty->assign('comment_count',$comment_count);
+    $smarty->display('view_post.tpl');
+
+$connection->disconnect(  );
+
+// フッタを表示する
+$smarty->display('footer.tpl');
+
+?>
+
+
+------------------------------
+○例 17-13 view_post.tpl
+    {section name=mysec loop=$posts}
+    <h2>{$posts[mysec].title}</h2>
+    {$posts[mysec].body}
+    <br />
+    Posted by <b>{$posts[mysec].first_name} {$posts[mysec].last_name}</b>
+    from the <b>{$posts[mysec].category}</b> category at
+    <b>{$posts[mysec].posted}</b>.<br />
+        {if $posts[mysec].user_id == $owner_id}
+        <a href="modify_post.php?post_id={$posts[mysec].post_id}&action=edit">Edit</a> ||
+        <a href="modify_post.php?post_id={$posts[mysec].post_id}&action=delete">Delete</a> ||
+        <a href="modify_comment.php?post_id={$posts[mysec].post_id}&action=add">Add a comment</a>
+        <br />
+        {/if}
+    {/section}
+    {if $comment_count != "0"}
+<h3>Comments</h3>
+    {section name=mysec2 loop=$comments}
+    <hr />
+    <b>{$comments[mysec2].title}</b>
+    <br />
+    {$comments[mysec2].body}
+    <br />
+    Posted by <b>{$comments[mysec2].first_name} {$comments[mysec2].last_name}</b>
+    at <b>{$comments[mysec2].posted}</b>.<br />
+        {if $comments[mysec2].user_id == $owner_id}
+        <a href="modify_comment.php?comment_id={$comments[mysec2].comment_id}&action=edit">
+        Edit</a> ||
+        <a href="modify_comment.php?comment_id={$comments[mysec2].comment_id}&action=delete"
+        >Delete</a>
+        <br />
+        {/if}
+    {/section}
+    {/if}
+
+
+------------------------------
+○例 17-14 modify_post.php
+<?php
+include('db_login.php');
+require_once('DB.php');
+require_once('config.php');
+
+// ログイン済みか確認する
+session_start(  );
+
+$stop=FALSE;
+$found_error=FALSE;
+// ヘッダを表示する
+$smarty->assign('blog_title',$blog_title);
+$smarty->display('header.tpl');
+
+if  (!isset($_SESSION['username'])) {
+    echo ("Please <a href='login.php'>login</a>.");
+    $stop=TRUE;
+}
+// フォーム入力値を取得する
+$post_id=$_POST[post_id];
+$title= $_POST['title'];
+$body= $_POST['body'];
+$action= $_POST['action'];
+$category_id= $_POST['category_id'];
+$user_id=$_SESSION["user_id"];
+
+// データベースに接続する
+$connection = DB::connect( "mysql://$db_username:$db_password@$db_host/$db_database" );
+if (!$connection){
+    die ("Could not connect to the database: <br>". DB::errorMessage(  ));
+}
+if ($_GET['action']=="delete" AND !$stop){
+    $get_post_id=$_GET[post_id];
+    $get_post_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($get_post_id) : $get_post_id);
+    $user_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($user_id) : $user_id);
+    $query = "DELETE FROM posts WHERE post_id='".$get_post_id."' AND
+    user_id='".$user_id."'";
+    $result = $connection->query($query);
+    if (DB::isError($result)){
+        die ("Could not query the database: <br>". $query. " ".
+        DB::errorMessage($result));
+    }
+    echo ("Deleted successfully.<br />");
+    $stop=TRUE;
+}
+
+// URLからIDを取得して、データを変更する
+if ($_GET['post_id'] AND !$stop) {
+    $get_post_id=$_GET[post_id];
+    $get_post_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($get_post_id) : $get_post_id);
+    $query = "SELECT * FROM users NATURAL JOIN posts NATURAL JOIN categories
+    where post_id = $get_post_id";
+    $result = $connection->query($query);
+    if (DB::isError($result)){
+        die ("Could not query the database: <br>". $query. " ".DB::errorMessage($result));
+    }
+    while ($result_row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
+        $posts[]=$result_row;
+    }
+    $smarty->assign('action','edit');
+    $smarty->assign('posts',$posts);
+    // カテゴリを取得する
+    $query = "SELECT category_id, category FROM categories";
+    $smarty->assign('categories',$connection->getAssoc($query));
+    $smarty->display('post_form.tpl');
+    $stop=TRUE;
+}
+
+// フォームが送信された場合の処理（追加と変更で処理を分岐）
+if ($_POST['submit'] AND !$stop)
+{
+    // フィールドを検証する
+    if ($title == ""){
+        echo ("Title must not be null.<br>");
+        $found_error=TRUE;
+        $stop=TRUE;
+    }
+    if ($body == ""){
+        echo ("Body must not be null.<br>");
+        $found_error=TRUE;
+        $stop=TRUE;
+    }
+    // 検証結果に問題がないのでデータベースへ追加
+    if ( $_POST['action']=="add" AND !$stop){
+        $category_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($category_id) : $category_id);
+        $title=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($title) : $title);
+        $body=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($body) : $body);
+        $user_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($user_id) : $user_id);
+        $query = "INSERT INTO posts VALUES (NULL,
+        "."'".$category_id."','".$user_id."','".$title."','".$body."', NULL)";
+        $result = $connection->query($query);
+        if (DB::isError($result))
+        {
+            die ("Could not query the database: <br>". $query. " ".DB::errorMessage($result));
+        }
+        echo ("Posted successfully.<br />");
+        $stop=TRUE;
+    }
+}
+if ($_POST['action']=="edit" and !$stop) {
+    $category_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($category_id) : $category_id);
+    $title=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($title) : $title);
+    $body=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($body) : $body);
+    $user_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($user_id) : $user_id);
+    $post_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($post_id) : $post_id);
+
+    $query = "UPDATE posts SET category_id ='".$category_id."',
+    title ='".$title."',body='".$body."' WHERE post_id='".$post_id."'
+     AND user_id='".$user_id."'";
+    $result = $connection->query($query);
+    if (DB::isError($result)){
+        die ("Could not query the database: <br>". $query. " ".
+        DB::errorMessage($result));
+    }
+    echo ("Updated successfully.<br />");
+    $stop=TRUE;
+}
+if (!$stop){
+    // 空のフォームを表示して
+    // 空のデータを作成する
+    $result_row=array('title'=>NULL,'body'=>NULL);
+    $posts[]=$result_row;
+    // カテゴリを取得する
+    $query = "SELECT category_id, category FROM categories";
+    $smarty->assign('categories',$connection->getAssoc($query));
+    $smarty->assign('posts',$posts);
+    $smarty->assign('action','add');
+    $smarty->display('post_form.tpl');
+}
+
+if ($found_error) {
+    // 入力された内容を変数に格納して
+    // フォームを再表示する
+    $result_row=array('title'=>"$title",'body'=>"$body",'post_id'=>"$post_id");
+    $posts[]=$result_row;
+    $smarty->assign('action',$action);
+    $smarty->assign('posts',$posts);
+    $smarty->display('post_form.tpl');
+}
+// フッタを表示する
+$smarty->display('footer.tpl');
+
+?>
+
+
+------------------------------
+○例 17-15 post_form.tpl
+{section name=mysec loop=$posts}
+    <form action="modify_post.php" method="POST">
+        <label>
+            Title: <input type="text" name="title" value="{$posts[mysec].title|escape}">
+        </label>
+        <br /><br />
+        <label>
+            Body: <textarea name="body" cols="40" rows="4">{$posts[mysec].body|escape }</textarea>
+        </label>
+        <input type="hidden" name="action" value="{$action|escape}">
+        <input type="hidden" name="post_id" value="{$posts[mysec].post_id|escape}"><br>
+        <label>
+            Category:
+                {html_options name="category_id" options=$categories selected=$posts[mysec].category_id|escape }
+        </label>
+        <br />
+        <input type="submit" name="submit" value="Post" />
+    </form>
+{/section}
+
+
+------------------------------
+○例 17-16 modify_comment.php
+<?php
+
+session_start(  );
+
+require_once('config.php');
+require_once('db_login.php');
+require_once('DB.php');
+
+// ヘッダを表示する
+$smarty->assign('blog_title',$blog_title);
+$smarty->display('header.tpl');
+
+// ログイン済みか確認する
+if (!isset($_SESSION["username"])) {
+    echo 'Please <a href="login.php">login</a>.';
+    exit;
+}
+
+// データベースに接続する
+$connection = DB::connect("mysql://$db_username:$db_password@$db_host/$db_database");
+
+if (DB::isError($connection)){
+    die ("Could not connect to the database: <br />". DB::errorMessage($connection));
+}
+
+$stop = FALSE;
+
+
+$post_id=$_POST[post_id];
+$title= $_POST['title'];
+$body= $_POST['body'];
+$action= $_POST['action'];
+$category_id= $_POST['category_id'];
+$user_id=$_SESSION["user_id"];
+    $comment_id = $_POST['comment_id'];
+
+if ($_GET['action'] == "delete" and !$stop) {
+        $comment_id = $_GET["comment_id"];
+        $comment_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($comment_id) : $comment_id);
+        $query = "DELETE FROM comments WHERE comment_id='".$comment_id."'AND user_id='".$user_id."'";
+    $result = $connection->query($query);
+    if (DB::isError($result)){
+       die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+    }
+    echo "Deleted successfully.<br />";
+    $stop = TRUE;
+}
+
+// URLからIDを取得して、データを変更する
+    if ($_GET["comment_id"] and !$stop) {
+        $comment_id = $_GET["comment_id"];
+        $query = "SELECT * FROM comments NATURAL JOIN users WHERE comment_id=".$_GET["comment_id"];
+    $result = $connection->query($query);
+    if (DB::isError($result)){
+        die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+    }
+    while ($result_row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
+        $comments[] = array('title'=>htmlentities($result_row['title']),
+                            'body'=>htmlentities($result_row['body']),
+                            'comment_id'=>$result_row['comment_id']);
+    }
+    $post_id = $_GET["post_id"];
+    $smarty->assign('action','edit');
+    $smarty->assign('comments',$comments);
+    $smarty->assign('post_id',htmlentities($post_id));
+    $smarty->display('comment_form.tpl');
+    // フッタを表示する
+    $smarty->display('footer.tpl');
+    exit;
+}
+
+// フォームが送信された場合の処理（追加と変更で処理を分岐）
+if ($_POST['submit'] and !$stop) {
+    // フィールドを検証する
+    if ($title == ""){
+    echo 'Title must not be null.<br />';
+    $found_error = TRUE;
+    $stop = TRUE;
+}
+if ($body == ""){
+    echo "Body must not be null.<br />";
+    $found_error = TRUE;
+    $stop = TRUE;
+}
+// 検証結果に問題がないのでデータベースへ追加
+if ($_POST['action'] == "add" AND !$stop) {
+    $title=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($title) : $title);
+    $body=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($body) : $body);
+    $post_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($post_id) : $post_id);
+    $user_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($user_id) : $user_id);
+        $query = "INSERT INTO comments VALUES (NULL,'".$user_id."','".$post_id."','".$title."','".$body."', NULL)";
+    $result = $connection->query($query);
+    if (DB::isError($result)){
+        die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+    }
+    echo "Posted successfully.<br />";
+    $stop = TRUE;
+}
+if ($_POST['action']=="edit" and !$stop){
+    $title=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($title) : $title);
+    $body=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($body) : $body);
+    $comment_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($comment_id) : $comment_id);
+    $user_id=mysql_real_escape_string(get_magic_quotes_gpc(  ) ? stripslashes($user_id) : $user_id);
+        $query = "UPDATE comments SET title='".$title."',body='".$body."' WHERE comment_id='".$comment_id."' AND user_id='".$user_id."'";
+    $result = $connection->query($query);
+    if (DB::isError($result)){
+        die("Could not query the database: <br />".$query." ".DB::errorMessage($result));
+    }
+    echo 'Updated successfully.<br />';
+    $stop = TRUE;
+    }
+}
+
+if (!$stop){
+    // 空のフォームを表示する
+    // 入力内容は空にする
+    $post_id = $_GET["post_id"];
+    $result_row = array('title'=>NULL,'body'=>NULL,'comment_id'=>NULL);
+    $comments[] = $result_row;
+    // カテゴリを取得する
+    $smarty->assign('post_id',htmlentities($post_id));
+    $smarty->assign('comments',$comments);
+    $smarty->assign('action','add');
+    $smarty->display('comment_form.tpl');
+}
+
+if ($found_error) {
+    // 入力された内容を変数に格納して
+    // フォームを再表示する
+    $post_id = $_POST["post_id"];
+    $result_row = array('title'=>htmlentities($title),'body'=>htmlentities($body),'comment_id'=>htmlentities($comment_id));
+    $comments[] = $result_row;
+    $smarty->assign('action',htmlentities($action));
+    $smarty->assign('post_id',htmlentities($post_id));
+    $smarty->assign('comments',$comments);
+    $smarty->display('comment_form.tpl');
+}
+
+// フッタを表示する
+$smarty->display('footer.tpl');
+
+?>
+
+
+------------------------------
+○例 17-17 comment_form.tpl
+{section name=mysec loop=$comments}
+    <form action="modify_comment.php" method="post">
+        <label>
+            Title:
+            <input type="text" name="title" value="{$comments[mysec].title}" />
+        </label>
+        <br />
+        <br />
+        <label>
+            Body:
+            <textarea name="body" cols="40" rows="4">{$comments[mysec].body}</textarea>
+        </label>
+        <input type="hidden" name="action" value="{$action}" />
+        <input type="hidden" name="post_id" value="{$post_id}" />
+        <input type="hidden" name="comment_id" value="{$comments[mysec].comment_id}" />
+        <br /><br />
+        <input type="submit" name="submit" value="Post" />
+    </form>
+{/section}
+
+
+
+******
+18章
+******
+
+------------------------------
+○例 18-1 ファイルのコメント
+/*
+ *
+ * 家具屋についてのファイル
+ * このファイルは、ミネソタ、ウィスコンシン、アイオワ、イリノイの家具店に関係している。
+ *
+ * Copyright 2008-2009 (c) O'Reilly Media, Inc.（一部）
+ * Copyright 2009 (c) 個々の作者（残り）
+ *
+ * @version $Id: coding_standards.html,v 1.2 2009/12/19 24:49:50
+ *
+ */
+
+
+
+------------------------------
+○例 18-2 関数のコメント
+/*
+ * 家具屋の場所
+ * 郵便番号に基づいて家具屋をミネソタ、
+ * ウィスコンシン、アイオワ、イリノイに配置する
+ *
+ * @author    michele davis mdavis@example.com
+ * @param     zipcode 郵便番号（近所から店舗を探すための郵便番号）
+ * @return    store     店舗（最寄店舗の店舗ID）
+ * @date      2009-12-21
+*
+*/
+
